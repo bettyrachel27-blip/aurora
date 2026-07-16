@@ -1,26 +1,20 @@
-# Aurora Alpha 1.0
+# Aurora Alpha 1.1 — correction visuelle
 
-Refonte complète inspirée de la maquette validée.
+Cette version corrige la principale différence avec la maquette :
 
-## Inclus
-- illustration intégrée dans le code ;
-- grands mandalas visibles ;
-- accueil en deux panneaux sur ordinateur et mobile optimisé ;
-- agenda jour/semaine/mois ;
-- tâches visibles directement dans l’agenda ;
-- tâches perso/pro/Betty & Co avec reports automatiques ;
-- routines adaptatives ;
-- budget ;
-- journal du soir ;
-- statistiques ;
-- espace Betty & Co ;
-- sauvegarde locale ;
-- PWA installable.
+- remplacement du personnage en dessin filaire par une illustration féminine détaillée ;
+- ajout d’un véritable fond floral issu du style validé ;
+- mandalas plus visibles ;
+- panneaux chocolat texturés ;
+- cartes crème et dorées plus riches ;
+- contrastes et profondeur renforcés ;
+- adaptation mobile conservée ;
+- toutes les fonctions de la version 1.0 restent présentes.
 
-## Mise à jour
+## Mise en ligne
 1. Décompresser le ZIP.
 2. Copier tout dans `Documents/GitHub/aurora`.
-3. Choisir `Remplacer les fichiers dans la destination`.
-4. GitHub Desktop : Summary `Aurora Alpha 1.0`.
-5. `Commit to main`, puis `Push origin`.
-6. Render : attendre ou `Deploy latest commit`.
+3. Remplacer les fichiers existants.
+4. GitHub Desktop : `Aurora Alpha 1.1 visuel`.
+5. Commit to main puis Push origin.
+6. Render : Deploy latest commit ou Clear build cache & deploy.

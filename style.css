@@ -20,3 +20,131 @@ button,input,textarea,select{font:inherit}.splash{position:fixed;inset:0;z-index
 .side-menu,.notification-drawer{position:fixed;z-index:100;top:0;height:100%;width:min(88vw,390px);background:var(--paper);padding:22px;box-shadow:0 0 55px rgba(44,24,14,.25);transition:.3s}.side-menu{left:0;transform:translateX(-105%)}.notification-drawer{right:0;transform:translateX(105%)}.side-menu.open,.notification-drawer.open{transform:none}.menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.menu-head button{border:0;background:transparent;font-size:20px}.side-menu>button{width:100%;border:0;background:transparent;text-align:left;padding:14px 5px;border-bottom:1px solid var(--border);color:var(--brown)}.sheet-overlay{position:fixed;inset:0;z-index:110;background:rgba(50,28,17,.38);display:none;align-items:end}.sheet-overlay.open{display:flex}.bottom-sheet{width:min(100%,600px);margin:auto;background:var(--paper);border-radius:28px 28px 0 0;padding:22px}.choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.choice-grid button{border:1px solid var(--border);background:rgba(255,250,244,.9);border-radius:18px;padding:18px;font-size:24px}.choice-grid span{display:block;font-size:11px;margin-top:7px}.toast{position:fixed;z-index:220;left:50%;bottom:110px;transform:translate(-50%,18px);opacity:0;background:#3f281d;color:#fff1d2;border-radius:999px;padding:12px 18px;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}dialog{border:0;border-radius:25px;background:var(--paper);width:min(92vw,460px);padding:22px;box-shadow:var(--shadow)}dialog::backdrop{background:rgba(48,27,17,.45)}dialog label{display:block;margin:13px 0;font-weight:600}dialog input,dialog select{width:100%;border:1px solid var(--border);background:#fffdf9;border-radius:14px;padding:11px;margin-top:6px}.version{position:fixed;right:8px;bottom:88px;font-size:9px;color:rgba(91,57,40,.42)}
 @media(max-width:850px){.home-layout{grid-template-columns:1fr}.portrait-panel{grid-template-columns:38% 62%;min-height:660px}.dashboard-panel{grid-template-columns:repeat(2,1fr)}.smart-card{grid-column:1/-1}}
 @media(max-width:620px){.app-shell{padding-left:12px;padding-right:12px}.portrait-panel{grid-template-columns:1fr;min-height:auto}.portrait-illustration{height:350px}.portrait-copy{padding:24px 18px}.home-shortcuts{grid-template-columns:repeat(2,1fr)}.dashboard-panel{grid-template-columns:1fr}.summary-card{grid-template-columns:1fr 125px}.task-summary small{display:none}.page-heading h2{font-size:35px}}
+
+/* Aurora Alpha 1.1 — correction visuelle fidèle à la maquette */
+body{
+  background:
+    linear-gradient(rgba(255,250,244,.68),rgba(239,217,195,.80)),
+    url("assets/floral-header.webp") top center / 100% auto no-repeat,
+    url("assets/paper-texture.svg") center / 520px;
+  background-attachment:fixed;
+}
+.ornament{
+  opacity:.32;
+  filter:sepia(.2) saturate(1.15);
+}
+.ornament-a{
+  width:520px;height:520px;right:-155px;top:10px;
+}
+.ornament-b{
+  width:440px;height:440px;left:-155px;bottom:-90px;
+}
+.app-header{
+  background:rgba(255,249,241,.72);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(91,57,40,.12);
+  border-radius:22px;
+  padding:10px 14px;
+  margin-bottom:14px;
+  box-shadow:0 12px 30px rgba(72,42,25,.10);
+}
+.portrait-panel{
+  background:
+    linear-gradient(100deg,rgba(255,249,241,.08),rgba(255,249,241,.92) 46%,rgba(239,215,191,.88)),
+    url("assets/floral-header.webp") center / cover;
+  border-color:rgba(123,77,45,.22);
+  box-shadow:0 24px 70px rgba(77,43,25,.20);
+}
+.portrait-illustration{
+  background:#e7c7a6;
+}
+.portrait-illustration:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent 55%,rgba(255,249,241,.78));
+  pointer-events:none;
+}
+.portrait-illustration img{
+  object-fit:cover;
+  object-position:42% 48%;
+  filter:none;
+  transform:scale(1.015);
+}
+.portrait-copy{
+  background:linear-gradient(90deg,rgba(255,249,241,.70),rgba(255,249,241,.92));
+  border-left:1px solid rgba(123,77,45,.10);
+}
+.portrait-copy h1{
+  color:#5a2f20;
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
+}
+.soft-quote{
+  font-size:18px;
+  line-height:1.75;
+}
+.home-shortcuts button{
+  background:linear-gradient(145deg,rgba(255,250,244,.96),rgba(237,215,193,.88));
+  border-color:rgba(121,76,45,.18);
+  box-shadow:0 14px 30px rgba(73,42,25,.11);
+}
+.home-shortcuts span{
+  color:#6b3f29;
+}
+.aurora-message{
+  background:
+    linear-gradient(145deg,rgba(92,54,34,.96),rgba(49,27,18,.97)),
+    url("assets/brown-mandala.webp") center / cover;
+  border:1px solid rgba(231,194,105,.42);
+}
+.aurora-message:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:url("assets/brown-mandala.webp") center / cover;
+  opacity:.18;
+  mix-blend-mode:screen;
+  pointer-events:none;
+}
+.aurora-message>*{
+  position:relative;
+  z-index:2;
+}
+.summary-card,.priority-card,.smart-card,.paper-card,.journal-card,.business-hero,.stats-chart-card{
+  background:
+    linear-gradient(145deg,rgba(255,250,244,.94),rgba(239,217,195,.88));
+  border-color:rgba(121,76,45,.19);
+  box-shadow:0 18px 48px rgba(74,42,24,.13);
+}
+.smart-card{
+  background:
+    linear-gradient(145deg,rgba(241,220,198,.96),rgba(255,250,244,.97)),
+    url("assets/mandala.svg") right -50px bottom -60px / 190px no-repeat;
+}
+.page-heading h2,.portrait-copy h1,.summary-card>div>span,.priority-card>span,.smart-card>span{
+  color:#5b3021;
+}
+.bottom-nav{
+  background:linear-gradient(180deg,rgba(255,249,241,.98),rgba(216,179,145,.98));
+  border-top-color:rgba(93,56,35,.20);
+}
+.lotus-nav{
+  background:
+    radial-gradient(circle,#b77d36 0 26%,#5b3625 27% 100%)!important;
+}
+@media(max-width:620px){
+  .portrait-illustration{
+    height:430px;
+  }
+  .portrait-illustration img{
+    object-position:center 42%;
+  }
+  .portrait-illustration:after{
+    background:linear-gradient(180deg,transparent 58%,rgba(255,249,241,.86));
+  }
+  .portrait-copy{
+    background:rgba(255,249,241,.94);
+    border-left:0;
+    border-top:1px solid rgba(123,77,45,.12);
+  }
+}
