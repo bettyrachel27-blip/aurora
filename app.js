@@ -1,343 +1,110 @@
-const STORAGE_KEY="aurora-alpha-05";
-const todayISO=()=>new Date().toISOString().slice(0,10);
-const defaultState={
- dayType:"work",
- selectedDate:todayISO(),
- income:2300,
- savings:100,
- events:[
-  {id:1,date:todayISO(),time:"10:30",title:"Dentiste",type:"personal",detail:"Cabinet médical"},
-  {id:2,date:todayISO(),time:"15:00",title:"Réunion fournisseur",type:"work",detail:"Hôtel Marina"}
- ],
- tasks:[
-  {id:1,title:"Commander les boissons",type:"work",priority:"urgent",due:todayISO(),report:"next-workday",done:false},
-  {id:2,title:"Appeler la mutuelle",type:"personal",priority:"important",due:todayISO(),report:"until-done",done:false},
-  {id:3,title:"Vérifier le planning équipe",type:"work",priority:"important",due:todayISO(),report:"next-workday",done:true},
-  {id:4,title:"Acheter les croquettes",type:"personal",priority:"normal",due:todayISO(),report:"next-free-day",done:false}
- ],
- habits:[
-  {id:1,title:"Boire 2 L d’eau",dayTypes:["work","rest","vacation","sick"],meta:"3/8 verres",done:false},
-  {id:2,title:"Marche 30 minutes",dayTypes:["work","rest","vacation"],meta:"Mouvement",done:true},
-  {id:3,title:"Étirements 10 minutes",dayTypes:["work","sick"],meta:"Adapté à ton énergie",done:false},
-  {id:4,title:"Préparer demain",dayTypes:["work","rest"],meta:"Routine du soir",done:false},
-  {id:5,title:"Grande balade avec le chien",dayTypes:["rest","vacation"],meta:"Temps pour vous",done:false},
-  {id:6,title:"Sport 30 minutes",dayTypes:["rest"],meta:"Séance complète",done:false}
- ],
- expenses:[
-  {id:1,date:todayISO(),title:"Courses",amount:54.20,cat:"Maison"},
-  {id:2,date:todayISO(),title:"Restaurant",amount:28,cat:"Loisirs"},
-  {id:3,date:todayISO(),title:"Essence",amount:45,cat:"Transport"}
- ],
- projectTasks:[
-  {id:1,title:"Définir l’identité visuelle",done:true},
-  {id:2,title:"Choisir 5 produits de lancement",done:false},
-  {id:3,title:"Créer la page Instagram",done:false},
-  {id:4,title:"Préparer le premier budget",done:false}
- ],
- journal:[],
- notifications:[
-  {id:1,title:"Rendez-vous dans 1 h",text:"Dentiste à 10 h 30.",read:false},
-  {id:2,title:"Travail",text:"Deux priorités professionnelles sont encore ouvertes.",read:false},
-  {id:3,title:"Budget",text:"Pense à enregistrer tes dépenses de la journée.",read:false}
- ]
+const KEY="aurora-alpha-10";
+const isoToday=()=>new Date().toISOString().slice(0,10);
+const base={
+  dayMode:"work",selectedDate:isoToday(),income:2300,savings:100,water:1.2,steps:2845,
+  events:[
+    {id:1,date:isoToday(),time:"08:00",title:"Routine matin",type:"personal",detail:"Habitude"},
+    {id:2,date:isoToday(),time:"10:30",title:"Rendez-vous dentiste",type:"personal",detail:"Cabinet médical"},
+    {id:3,date:isoToday(),time:"11:30",title:"Service déjeuner",type:"work",detail:"Travail"},
+    {id:4,date:isoToday(),time:"15:00",title:"Réunion équipe",type:"work",detail:"Hôtel Marina"},
+    {id:5,date:isoToday(),time:"18:30",title:"Promenade du chien",type:"personal",detail:"Personnel"}
+  ],
+  tasks:[
+    {id:1,title:"Préparer le service du dîner",type:"work",priority:"important",due:isoToday(),time:"09:00",report:"next-workday",done:false},
+    {id:2,title:"Répondre aux mails",type:"work",priority:"normal",due:isoToday(),time:"11:00",report:"next-workday",done:false},
+    {id:3,title:"Publier post Instagram Betty & Co",type:"business",priority:"normal",due:isoToday(),time:"",report:"tomorrow",done:false},
+    {id:4,title:"Appeler maman",type:"personal",priority:"low",due:isoToday(),time:"",report:"until-done",done:false},
+    {id:5,title:"Préparer dossier événement",type:"work",priority:"important",due:isoToday(),time:"",report:"next-workday",done:false}
+  ],
+  habits:[
+    {id:1,title:"Routine matin complète",group:"Matin",modes:["work","rest","vacation","sick"],done:true},
+    {id:2,title:"Boire un grand verre d’eau",group:"Matin",modes:["work","rest","vacation","sick"],done:true},
+    {id:3,title:"Méditation 5 min",group:"Matin",modes:["rest","vacation"],done:false},
+    {id:4,title:"Petit déjeuner sain",group:"Matin",modes:["work","rest"],done:false},
+    {id:5,title:"Préparer ma to-do list",group:"Matin",modes:["work","rest"],done:true},
+    {id:6,title:"Sport / Étirements",group:"Soir",modes:["work","rest"],done:false},
+    {id:7,title:"Routine du soir",group:"Soir",modes:["work","rest","vacation","sick"],done:false},
+    {id:8,title:"Journal du soir",group:"Soir",modes:["work","rest","vacation","sick"],done:false}
+  ],
+  expenses:[
+    {id:1,date:isoToday(),title:"Courses",amount:54.20,cat:"Maison"},
+    {id:2,date:isoToday(),title:"Restaurant",amount:28,cat:"Loisirs"},
+    {id:3,date:isoToday(),title:"Essence",amount:45,cat:"Transport"}
+  ],
+  projectTasks:[
+    {id:1,title:"Définir l’identité visuelle",done:true},
+    {id:2,title:"Choisir cinq produits de lancement",done:false},
+    {id:3,title:"Créer une page Instagram",done:false},
+    {id:4,title:"Préparer le premier budget",done:false}
+  ],
+  notifications:[
+    {id:1,title:"Rendez-vous dans 1 h",text:"Dentiste à 10 h 30.",read:false},
+    {id:2,title:"Priorité travail",text:"Préparer le service du dîner.",read:false},
+    {id:3,title:"Budget",text:"Pense à enregistrer tes dépenses.",read:false}
+  ],journal:[]
 };
-let state=loadState();
-let todayFilter="all",taskFilter="all",habitTab="today",agendaMode="day";
-const $=(s,e=document)=>e.querySelector(s), $$=(s,e=document)=>[...e.querySelectorAll(s)];
-function loadState(){try{return {...structuredClone(defaultState),...JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")}}catch{return structuredClone(defaultState)}}
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
-function dateAdd(iso,days){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
-function nextWorkday(iso){
- let d=iso;
- do{d=dateAdd(d,1)}while([0,6].includes(new Date(d+"T12:00:00").getDay()));
- return d
-}
-function nextFreeDay(iso){
- let d=iso;
- do{d=dateAdd(d,1)}while(![0,6].includes(new Date(d+"T12:00:00").getDay()));
- return d
-}
-function applyTaskReports(){
- const today=todayISO();
- let changed=false;
- state.tasks.forEach(t=>{
-  if(t.done || t.due>=today) return;
-  if(t.report==="tomorrow"){
-   t.due=today;
-   changed=true;
-  }else if(t.report==="next-workday"){
-   let next=nextWorkday(t.due);
-   while(next<today) next=nextWorkday(next);
-   t.due=next;
-   changed=true;
-  }else if(t.report==="next-free-day"){
-   let next=nextFreeDay(t.due);
-   while(next<today) next=nextFreeDay(next);
-   t.due=next;
-   changed=true;
-  }else if(t.report==="until-done"){
-   t.due=today;
-   changed=true;
-  }
- });
- if(changed)save();
-}
-applyTaskReports();
-
-const dayLabels={work:"💼 Travail",rest:"🏡 Repos",vacation:"✈️ Vacances",sick:"🌿 Repos santé"};
-const typeLabels={personal:"Perso",work:"Pro",business:"Betty & Co"};
-function setHeader(){
- const d=new Date(),h=d.getHours();
- $("#dateLabel").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
- $("#greeting").textContent=h<12?"Bonjour Betty":h<18?"Bel après-midi Betty":"Bonsoir Betty";
- $("#dayTypeBtn").textContent=dayLabels[state.dayType]+" ▾";
- const texts={
-  work:["Ta journée de travail est prête","Aurora met en avant les rendez-vous pro, les priorités et une routine réaliste."],
-  rest:["Ta journée de repos est prête","Du temps pour toi, ta maison, ton sport et tes projets."],
-  vacation:["Profite de ta journée","Aurora garde seulement les rappels essentiels et les habitudes légères."],
-  sick:["Prends soin de toi","La routine est allégée et les tâches non urgentes peuvent attendre."]
- };
- $("#heroTitle").textContent=texts[state.dayType][0];$("#heroText").textContent=texts[state.dayType][1];
-}
-function eventRow(e){return `<article class="event-row"><span class="time">${e.time}</span><div class="main"><b>${e.title}</b><small>${e.detail||""}</small></div><span class="tag ${e.type}">${typeLabels[e.type]}</span></article>`}
-function reportLabel(report){
- const labels={
-  "tomorrow":"Report : lendemain",
-  "next-workday":"Report : prochain jour travaillé",
-  "next-free-day":"Report : prochain jour libre",
-  "until-done":"Reste prioritaire jusqu’à réalisation",
-  "none":"Sans report automatique"
- };
- return labels[report]||"Sans report automatique";
-}
-function taskRow(t){return `<article class="task-row ${t.done?"done":""}" data-task-id="${t.id}"><button class="check">${t.done?"✓":""}</button><div class="main"><b>${t.title}</b><small>${reportLabel(t.report)} · ${formatDate(t.due)}</small></div><span class="tag ${t.type}">${t.priority}</span></article>`}
-function habitRow(h){return `<article class="habit-row ${h.done?"done":""}" data-habit-id="${h.id}"><button class="check">${h.done?"✓":""}</button><div class="main"><b>${h.title}</b><small>${h.meta}</small></div><span class="tag personal">Routine</span></article>`}
-function projectRow(t){return `<article class="project-task ${t.done?"done":""}" data-project-id="${t.id}"><button class="check">${t.done?"✓":""}</button><div class="main"><b>${t.title}</b><small>Étape Betty & Co</small></div></article>`}
-function formatDate(iso){return new Date(iso+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}
-function dayHabits(){return state.habits.filter(h=>h.dayTypes.includes(state.dayType))}
-function selectedEvents(){return state.events.filter(e=>e.date===state.selectedDate)}
-function todayTasks(){return state.tasks.filter(t=>t.due<=todayISO())}
-function filterType(arr,filter){return filter==="all"?arr:arr.filter(x=>x.type===filter)}
-function empty(text){return `<article class="empty">${text}</article>`}
-
-function allAgendaItemsForDate(date){
- const events=state.events.filter(e=>e.date===date).map(e=>({...e,itemKind:"event"}));
- const tasks=state.tasks.filter(t=>t.due===date).map(t=>({...t,itemKind:"task",time:t.time||"À faire",detail:reportLabel(t.report)}));
- return [...events,...tasks].sort((a,b)=>{
-  const ta=a.time==="À faire"?"99:99":a.time;
-  const tb=b.time==="À faire"?"99:99":b.time;
-  return ta.localeCompare(tb);
- });
-}
-function smartPriority(){
- const tasks=todayTasks().filter(t=>!t.done);
- const urgent=tasks.find(t=>t.priority==="urgent");
- const important=tasks.find(t=>t.priority==="important");
- const nextEvent=state.events.filter(e=>e.date===todayISO() && e.time>=new Date().toTimeString().slice(0,5)).sort((a,b)=>a.time.localeCompare(b.time))[0];
- if(urgent) return {title:"Commence par l’urgent",text:`« ${urgent.title} » est la priorité la plus forte aujourd’hui.`,action:"tasks"};
- if(nextEvent) return {title:`Prochain rendez-vous à ${nextEvent.time}`,text:`Prépare « ${nextEvent.title} » avant de passer à autre chose.`,action:"agenda"};
- if(important) return {title:"Une priorité importante t’attend",text:`Tu peux avancer maintenant sur « ${important.title} ».`,action:"tasks"};
- if(tasks.length) return {title:"Une petite action suffit",text:`Commence par « ${tasks[0].title} » pour lancer ta dynamique.`,action:"tasks"};
- return {title:"Tout est sous contrôle",text:"Tes priorités du jour sont terminées. Aurora te propose un moment pour toi ou Betty & Co.",action:"projects"};
-}
-function combinedDayProgress(){
- const items=[...todayTasks(),...dayHabits()];
- if(!items.length) return 0;
- return Math.round(items.filter(x=>x.done).length/items.length*100);
-}
-function agendaTaskRow(t){
- return `<article class="agenda-task-row ${t.done?"done":""}" data-task-id="${t.id}">
- <span class="time">✓</span>
- <button class="check">${t.done?"✓":""}</button>
- <div class="main"><b>${t.title}</b><small>${typeLabels[t.type]} · ${t.priority} · ${reportLabel(t.report)}</small></div>
- <span class="tag ${t.type}">Tâche</span></article>`;
-}
-function agendaEventRow(e){
- return `<article class="event-row">
- <span class="time">${e.time}</span>
- <div class="main"><b>${e.title}</b><small>${e.detail||""}</small></div>
- <span class="tag ${e.type}">${typeLabels[e.type]}</span></article>`;
-}
+let state=load(),agendaMode="day",taskTab="all",routineTab="today";
+const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
+function load(){try{return {...structuredClone(base),...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch{return structuredClone(base)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function addDays(iso,n){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function fmt(iso,opts={day:"numeric",month:"long",year:"numeric"}){return new Date(iso+"T12:00:00").toLocaleDateString("fr-FR",opts)}
+const typeLabel={personal:"Personnel",work:"Travail",business:"Betty & Co"};
+const reportLabel={tomorrow:"Au lendemain","next-workday":"Prochain jour travaillé","next-free-day":"Prochain jour libre","until-done":"Chaque jour jusqu’à fait",none:"Sans report automatique"};
+const dayLabel={work:"Travail",rest:"Repos",vacation:"Vacances",sick:"Repos santé"};
+function nextWorkday(iso){let d=iso;do{d=addDays(d,1)}while([0,6].includes(new Date(d+"T12:00:00").getDay()));return d}
+function nextFreeDay(iso){let d=iso;do{d=addDays(d,1)}while(![0,6].includes(new Date(d+"T12:00:00").getDay()));return d}
+function applyReports(){let changed=false;const today=isoToday();state.tasks.forEach(t=>{if(t.done||t.due>=today)return;if(t.report==="tomorrow"||t.report==="until-done"){t.due=today;changed=true}else if(t.report==="next-workday"){while(t.due<today)t.due=nextWorkday(t.due);changed=true}else if(t.report==="next-free-day"){while(t.due<today)t.due=nextFreeDay(t.due);changed=true}});if(changed)save()}
+applyReports();
+function visibleHabits(){return state.habits.filter(h=>h.modes.includes(state.dayMode))}
+function todayTasks(){return state.tasks.filter(t=>t.due<=isoToday())}
+function progress(){const list=[...todayTasks(),...visibleHabits()];return list.length?Math.round(list.filter(x=>x.done).length/list.length*100):0}
+function remaining(){return state.income-state.savings-state.expenses.reduce((s,e)=>s+Number(e.amount),0)}
+function topPriority(){const open=todayTasks().filter(t=>!t.done);return open.find(t=>t.priority==="important")||open.find(t=>t.priority==="normal")||open[0]}
+function smart(){const p=topPriority();const upcoming=state.events.filter(e=>e.date===isoToday()&&e.time>=new Date().toTimeString().slice(0,5)).sort((a,b)=>a.time.localeCompare(b.time))[0];if(p)return{title:"Commence par ta priorité",text:`« ${p.title} » est la meilleure action à faire maintenant.`,go:"tasks"};if(upcoming)return{title:`Prochain rendez-vous à ${upcoming.time}`,text:`Prépare « ${upcoming.title} » tranquillement.`,go:"agenda"};return{title:"Tout est sous contrôle",text:"Tu peux avancer 15 minutes sur Betty & Co ou prendre du temps pour toi.",go:"projects"}}
+function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1600)}
 function render(){
- setHeader();
- const todayEvents=state.events.filter(e=>e.date===todayISO()).sort((a,b)=>a.time.localeCompare(b.time));
- const openTasks=todayTasks().filter(t=>!t.done);
- const habits=dayHabits();
- const completedHabits=habits.filter(h=>h.done).length;
- const expenses=state.expenses.reduce((s,e)=>s+Number(e.amount),0);
- const remaining=state.income-expenses-state.savings;
- $("#eventCount").textContent=todayEvents.length;
- $("#nextEvent").textContent=todayEvents[0]?`Prochain à ${todayEvents[0].time}`:"Aucun aujourd’hui";
- $("#taskCount").textContent=openTasks.length;
- $("#priorityCount").textContent=`${openTasks.filter(t=>["urgent","important"].includes(t.priority)).length} prioritaire(s)`;
- $("#habitProgress").textContent=`${completedHabits}/${habits.length}`;
- $("#habitPercent").textContent=`${habits.length?Math.round(completedHabits/habits.length*100):0} % réalisée`;
- $("#budgetRemaining").textContent=`${Math.round(remaining)} €`;
- const dayProgress=combinedDayProgress();
- $("#homeProgressValue").textContent=dayProgress+"%";
- $("#homeProgressBar").style.width=dayProgress+"%";
- $("#homeProgressText").textContent=dayProgress<35?"Commence doucement : Aurora met en avant une seule priorité.":dayProgress<75?"Ta journée avance bien. Les cartes se réorganisent selon ce qu’il reste.":"Très belle progression. Aurora allège maintenant les rappels.";
- const smart=smartPriority();
- $("#smartSuggestionTitle").textContent=smart.title;
- $("#smartSuggestionText").textContent=smart.text;
- $("#smartSuggestionAction").dataset.smartNav=smart.action;
- const timeline=[...todayEvents.map(e=>({...e,kind:"event"})),...openTasks.slice(0,2).map(t=>({time:"À faire",title:t.title,type:t.type,detail:t.priority,kind:"task"}))];
- $("#homeTimeline").innerHTML=timeline.length?timeline.slice(0,4).map(x=>x.kind==="event"?eventRow(x):`<article class="event-row"><span class="time">✓</span><div class="main"><b>${x.title}</b><small>${x.detail}</small></div><span class="tag ${x.type}">${typeLabels[x.type]}</span></article>`).join(""):empty("Ta journée est libre pour le moment.");
- $("#homePriorities").innerHTML=openTasks.length?openTasks.slice(0,3).map(taskRow).join(""):empty("Toutes tes priorités sont terminées.");
- const todayEventsFiltered=filterType(todayEvents,todayFilter),todayTasksFiltered=filterType(todayTasks(),todayFilter);
- $("#todayEvents").innerHTML=todayEventsFiltered.length?todayEventsFiltered.map(eventRow).join(""):empty("Aucun rendez-vous dans cette catégorie.");
- $("#todayTasks").innerHTML=todayTasksFiltered.length?todayTasksFiltered.map(taskRow).join(""):empty("Aucune tâche dans cette catégorie.");
- $("#todayHabits").innerHTML=habits.length?habits.map(habitRow).join(""):empty("Aucune habitude prévue pour ce type de journée.");
- const listTasks=filterType(state.tasks,taskFilter);
- $("#taskList").innerHTML=listTasks.length?listTasks.sort((a,b)=>Number(a.done)-Number(b.done)).map(taskRow).join(""):empty("Aucune tâche dans cette catégorie.");
- renderAgenda();
- renderHabits();
- renderBudget(expenses,remaining);
- renderProject();
- renderNotifications();
- updateScore();
- bindDynamic();
+ const d=new Date(),h=d.getHours(),p=progress(),eventsToday=state.events.filter(e=>e.date===isoToday()),open=todayTasks().filter(t=>!t.done),habits=visibleHabits(),left=remaining(),prio=topPriority(),tip=smart();
+ $("#homeDate").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+ $("#helloTitle").textContent=h<12?"Bonjour Betty":h<18?"Bel après-midi Betty":"Bonsoir Betty";
+ $("#homeTime").textContent="Il est "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+ $("#dayModeButton").firstChild.textContent=dayLabel[state.dayMode]+" ";
+ $("#shortcutEvents").textContent=`${eventsToday.length} événements`;
+ $("#shortcutTasks").textContent=`${open.length} à faire`;
+ $("#shortcutHabits").textContent=`${habits.filter(x=>!x.done).length} à faire`;
+ $("#shortcutBudget").textContent=`${Math.round(left)} € restants`;
+ $("#summaryEvents").textContent=eventsToday.length;$("#summaryTasks").textContent=open.length;$("#summaryHabits").textContent=habits.filter(x=>!x.done).length;$("#summaryWater").textContent=state.water.toFixed(1).replace(".",",")+" L";$("#summarySteps").textContent=state.steps.toLocaleString("fr-FR");
+ $("#homeProgress").textContent=p+"%";$("#homeDonut").style.setProperty("--progress",p+"%");
+ $("#priorityTitle").textContent=prio?prio.title:"Toutes les priorités sont terminées";$("#priorityMeta").textContent=prio?(prio.priority||"NORMAL").toUpperCase():"BRAVO";$("#priorityBar").style.width=(prio?15:100)+"%";
+ $("#smartTitle").textContent=tip.title;$("#smartText").textContent=tip.text;$("#smartAction").dataset.smartGo=tip.go;
+ $("#auroraMessage").textContent=p<35?"Tu as plusieurs priorités aujourd’hui. Commence par une seule, puis avance à ton rythme.":p<75?"Ta journée avance bien. Continue sans te mettre de pression.":"Tu as beaucoup avancé aujourd’hui. Pense aussi à souffler.";
+ renderAgenda();renderTasks();renderRoutines();renderBudget();renderProjects();renderNotifications();renderStats();
 }
+function eventMarkup(e){return `<div class="agenda-event"><time>${e.time}</time><span class="line"></span><article><b>${e.title}</b><small>${typeLabel[e.type]}${e.detail?" · "+e.detail:""}</small></article><button>＋</button></div>`}
+function taskMarkup(t){return `<div class="row ${t.done?"done":""}" data-task="${t.id}"><button class="circle-check">${t.done?"✓":""}</button><div class="row-main"><b>${t.title}</b><small>${typeLabel[t.type]} · ${t.priority} · ${t.time||fmt(t.due,{day:"numeric",month:"short"})}</small></div><span class="category ${t.type}">${typeLabel[t.type]}</span></div>`}
+function habitMarkup(h){return `<div class="row ${h.done?"done":""}" data-habit="${h.id}"><button class="circle-check">${h.done?"✓":""}</button><div class="row-main"><b>${h.title}</b><small>${h.group}</small></div></div>`}
 function renderAgenda(){
- const title=$("#agendaDateTitle");
- if(agendaMode==="day"){
-  const items=allAgendaItemsForDate(state.selectedDate);
-  title.textContent=state.selectedDate===todayISO()?"Aujourd’hui":new Date(state.selectedDate+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
-  $("#agendaOverview").innerHTML=`<article class="agenda-summary-card"><b>${items.filter(x=>x.itemKind==="event").length}</b><span>rendez-vous</span><b>${items.filter(x=>x.itemKind==="task").length}</b><span>tâches prévues</span></article>`;
-  $("#agendaList").innerHTML=items.length?items.map(item=>item.itemKind==="event"?agendaEventRow(item):agendaTaskRow(item)).join(""):empty("Aucun rendez-vous ni tâche à cette date.");
- }
- if(agendaMode==="week"){
-  const start=new Date(state.selectedDate+"T12:00:00");
-  const day=start.getDay()||7;
-  start.setDate(start.getDate()-day+1);
-  const days=[];
-  for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);days.push(d.toISOString().slice(0,10))}
-  title.textContent=`Semaine du ${formatDate(days[0])} au ${formatDate(days[6])}`;
-  $("#agendaOverview").innerHTML=`<div class="week-grid">${days.map(date=>{
-    const items=allAgendaItemsForDate(date);
-    return `<button class="week-day-card ${date===state.selectedDate?"active":""}" data-week-date="${date}">
-      <small>${new Date(date+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"short"})}</small>
-      <b>${new Date(date+"T12:00:00").getDate()}</b>
-      <span>${items.filter(x=>x.itemKind==="event").length} rdv</span>
-      <span>${items.filter(x=>x.itemKind==="task").length} tâches</span>
-    </button>`}).join("")}</div>`;
-  const weekItems=days.flatMap(date=>allAgendaItemsForDate(date).map(item=>({...item,agendaDate:date})));
-  $("#agendaList").innerHTML=weekItems.length?weekItems.map(item=>`<div class="week-item-group"><small>${formatDate(item.agendaDate)}</small>${item.itemKind==="event"?agendaEventRow(item):agendaTaskRow(item)}</div>`).join(""):empty("Aucun élément cette semaine.");
- }
- if(agendaMode==="month"){
-  const d=new Date(state.selectedDate+"T12:00:00"),year=d.getFullYear(),month=d.getMonth();
-  title.textContent=d.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
-  const first=new Date(year,month,1),last=new Date(year,month+1,0);
-  const offset=(first.getDay()+6)%7;
-  const cells=[];
-  for(let i=0;i<offset;i++)cells.push(null);
-  for(let day=1;day<=last.getDate();day++){
-   const iso=new Date(year,month,day,12).toISOString().slice(0,10);
-   cells.push({day,iso,items:allAgendaItemsForDate(iso)});
-  }
-  $("#agendaOverview").innerHTML=`<div class="month-grid">
-    ${["L","M","M","J","V","S","D"].map(x=>`<span class="month-head">${x}</span>`).join("")}
-    ${cells.map(c=>c?`<button class="month-cell ${c.iso===state.selectedDate?"active":""}" data-month-date="${c.iso}">
-      <b>${c.day}</b>
-      <i class="dot event-dot" style="opacity:${c.items.some(x=>x.itemKind==="event")?1:0}"></i>
-      <i class="dot task-dot" style="opacity:${c.items.some(x=>x.itemKind==="task")?1:0}"></i>
-    </button>`:`<span></span>`).join("")}
-  </div>`;
-  const items=allAgendaItemsForDate(state.selectedDate);
-  $("#agendaList").innerHTML=items.length?items.map(item=>item.itemKind==="event"?agendaEventRow(item):agendaTaskRow(item)).join(""):empty("Sélectionne un jour pour voir ses rendez-vous et ses tâches.");
- }
- bindAgendaModeItems();
+ $("#agendaTitle").textContent=agendaMode==="day"?fmt(state.selectedDate,{weekday:"long",day:"numeric",month:"long",year:"numeric"}):agendaMode==="week"?"Semaine autour du "+fmt(state.selectedDate,{day:"numeric",month:"long"}):fmt(state.selectedDate,{month:"long",year:"numeric"});
+ const strip=$("#agendaStrip");strip.innerHTML="";
+ for(let i=-3;i<=6;i++){const iso=addDays(state.selectedDate,i),b=document.createElement("button");b.className=iso===state.selectedDate?"active":"";const dd=new Date(iso+"T12:00:00");b.innerHTML=`<small>${dd.toLocaleDateString("fr-FR",{weekday:"short"})}</small><b>${dd.getDate()}</b>`;b.onclick=()=>{state.selectedDate=iso;save();renderAgenda()};strip.appendChild(b)}
+ let dates=[state.selectedDate];if(agendaMode==="week")dates=[-3,-2,-1,0,1,2,3].map(n=>addDays(state.selectedDate,n));if(agendaMode==="month"){const d=new Date(state.selectedDate+"T12:00:00");dates=Array.from({length:new Date(d.getFullYear(),d.getMonth()+1,0).getDate()},(_,i)=>new Date(d.getFullYear(),d.getMonth(),i+1,12).toISOString().slice(0,10))}
+ const events=dates.flatMap(date=>state.events.filter(e=>e.date===date).map(e=>({...e,date}))).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+ $("#agendaTimeline").innerHTML=events.length?events.map(eventMarkup).join(""):`<div class="row"><div class="row-main"><b>Aucun rendez-vous</b><small>Ajoute un rendez-vous avec le bouton +</small></div></div>`;
+ const dayTasks=state.tasks.filter(t=>dates.includes(t.due));$("#agendaTaskCount").textContent=dayTasks.length;$("#agendaTasks").innerHTML=dayTasks.length?dayTasks.map(taskMarkup).join(""):`<div class="row"><div class="row-main"><b>Aucune tâche prévue</b></div></div>`;bindRows();
 }
-function renderHabits(){
- const root=$("#habitContent"),habits=dayHabits(),done=habits.filter(h=>h.done).length,pct=habits.length?Math.round(done/habits.length*100):0;
- if(habitTab==="today")root.innerHTML=habits.length?habits.map(habitRow).join(""):empty("Aucune routine pour cette journée.");
- if(habitTab==="stats")root.innerHTML=`<article class="stats-hero"><span>Régularité aujourd’hui</span><strong>${pct}%</strong><div class="progress"><i style="width:${pct}%"></i></div><p>${done} habitude(s) réalisée(s) sur ${habits.length}.</p></article><div class="stats-grid"><article><b>${done}</b><span>Réalisées</span></article><article><b>${habits.length-done}</b><span>Restantes</span></article><article><b>3</b><span>Jours réguliers</span></article><article><b>75%</b><span>Semaine</span></article></div><article class="adaptive-card"><strong>Tendance Aurora</strong><p>Tu réussis mieux les habitudes courtes les jours de travail. Cette analyse deviendra plus précise avec tes saisies.</p></article>`;
- if(habitTab==="routines")root.innerHTML=`<article class="routine-card"><div><b>💼 Routine Travail</b><small>Hydratation, mouvement léger, préparation du lendemain.</small></div><button class="secondary" data-routine="work">Utiliser</button></article><article class="routine-card"><div><b>🏡 Routine Repos</b><small>Sport complet, grande balade, courses et projet personnel.</small></div><button class="secondary" data-routine="rest">Utiliser</button></article><article class="routine-card"><div><b>✈️ Routine Vacances</b><small>Hydratation, dépenses voyage et moments à garder.</small></div><button class="secondary" data-routine="vacation">Utiliser</button></article><article class="routine-card"><div><b>🌿 Routine Repos santé</b><small>Repos, hydratation, soins et tâches minimales.</small></div><button class="secondary" data-routine="sick">Utiliser</button></article>`;
-}
-function renderBudget(expenses,remaining){
- $("#budgetBig").textContent=`${remaining.toFixed(0)} €`;$("#incomeValue").textContent=`${state.income.toFixed(0)} €`;$("#expenseValue").textContent=`${expenses.toFixed(0)} €`;$("#savingValue").textContent=`${state.savings.toFixed(0)} €`;
- const d=new Date(),last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();$("#daysLeft").textContent=last-d.getDate();
- const used=Math.min(100,Math.round((expenses+state.savings)/state.income*100));$("#budgetBar").style.width=used+"%";$("#budgetStatus").textContent=`${used} % de tes revenus sont affectés ou dépensés`;
- $("#expenseList").innerHTML=state.expenses.length?state.expenses.map(e=>`<article class="expense-row"><div class="main"><b>${e.title}</b><small>${e.cat} · ${formatDate(e.date)}</small></div><strong>− ${Number(e.amount).toFixed(2).replace(".",",")} €</strong></article>`).join(""):empty("Aucune dépense enregistrée.");
-}
-function renderProject(){
- const done=state.projectTasks.filter(t=>t.done).length,pct=state.projectTasks.length?Math.round(done/state.projectTasks.length*100):0;$("#projectBar").style.width=pct+"%";$("#projectProgressText").textContent=`Progression globale : ${pct} %`;$("#projectTasks").innerHTML=state.projectTasks.map(projectRow).join("");
-}
-function renderNotifications(){
- const unread=state.notifications.filter(n=>!n.read).length;$("#notifBadge").textContent=unread;$("#notifBadge").style.display=unread?"block":"none";$("#notificationList").innerHTML=state.notifications.map(n=>`<article class="notification ${n.read?"":"unread"}"><div class="main"><b>${n.title}</b><small>${n.text}</small></div></article>`).join("");
-}
-function updateScore(){
- const items=[...todayTasks(),...dayHabits()],done=items.filter(x=>x.done).length,pct=items.length?Math.round(done/items.length*100):0;$("#scoreValue").textContent=pct+"%";$("#scoreBar").style.width=pct+"%";$("#scoreMessage").textContent=pct<40?"Commence par une petite action simple.":pct<80?"Ta journée avance bien. Continue à ton rythme.":"Très belle progression aujourd’hui.";
-}
-function bindAgendaModeItems(){
- $$("[data-week-date]").forEach(b=>b.onclick=()=>{state.selectedDate=b.dataset.weekDate;save();renderAgenda()});
- $$("[data-month-date]").forEach(b=>b.onclick=()=>{state.selectedDate=b.dataset.monthDate;save();renderAgenda()});
- $$(".agenda-task-row .check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest(".agenda-task-row").dataset.taskId));t.done=!t.done;save();render();flashSuccess(t.done?"Tâche terminée depuis l’agenda ✨":"Tâche réactivée")});
-}
-function bindDynamic(){
- $$(".task-row .check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest(".task-row").dataset.taskId));t.done=!t.done;save();render();flashSuccess(t.done?"Tâche terminée ✨":"Tâche réactivée")});
- $$(".habit-row .check").forEach(b=>b.onclick=()=>{const h=state.habits.find(x=>x.id===Number(b.closest(".habit-row").dataset.habitId));h.done=!h.done;save();render();flashSuccess(h.done?"Habitude réalisée 🌿":"Habitude réactivée")});
- $$(".project-task .check").forEach(b=>b.onclick=()=>{const t=state.projectTasks.find(x=>x.id===Number(b.closest(".project-task").dataset.projectId));t.done=!t.done;save();render();flashSuccess(t.done?"Tâche terminée ✨":"Tâche réactivée")});
- $$("[data-routine]").forEach(b=>b.onclick=()=>{state.dayType=b.dataset.routine;save();habitTab="today";setActiveTab("#habitTabs","data-habit-tab","today");render()});
-}
-function flashSuccess(message){
- let toast=document.querySelector(".aurora-toast");
- if(!toast){
-  toast=document.createElement("div");
-  toast.className="aurora-toast";
-  document.body.appendChild(toast);
- }
- toast.textContent=message;
- toast.classList.remove("show");
- void toast.offsetWidth;
- toast.classList.add("show");
- setTimeout(()=>toast.classList.remove("show"),1800);
-}
-function go(view){$$(".view").forEach(v=>v.classList.toggle("active",v.dataset.view===view));$$(".bottom-nav [data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===view));$("#addSheet").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"})}
-$$("[data-nav]").forEach(b=>b.onclick=()=>go(b.dataset.nav));
-$("#openAdd").onclick=()=>$("#addSheet").classList.add("open");
-$("#notifBtn").onclick=()=>$("#notifications").classList.add("open");
-$("#dayTypeBtn").onclick=()=>$("#dayTypeSheet").classList.add("open");
-$$("[data-close]").forEach(b=>b.onclick=()=>$("#"+b.dataset.close).classList.remove("open"));
-$("#readAll").onclick=()=>{state.notifications.forEach(n=>n.read=true);save();render()};
-$$("[data-day-type]").forEach(b=>b.onclick=()=>{state.dayType=b.dataset.dayType;save();$("#dayTypeSheet").classList.remove("open");render()});
-function setActiveTab(selector,attr,value){$$(selector+" button").forEach(b=>b.classList.toggle("active",b.getAttribute(attr)===value))}
-$$("[data-filter]").forEach(b=>b.onclick=()=>{todayFilter=b.dataset.filter;setActiveTab("#todayFilters","data-filter",todayFilter);render()});
-$$("[data-task-filter]").forEach(b=>b.onclick=()=>{taskFilter=b.dataset.taskFilter;setActiveTab("#taskFilters","data-task-filter",taskFilter);render()});
-$$("[data-habit-tab]").forEach(b=>b.onclick=()=>{habitTab=b.dataset.habitTab;setActiveTab("#habitTabs","data-habit-tab",habitTab);render()});
-$$("[data-agenda-mode]").forEach(b=>b.onclick=()=>{
- agendaMode=b.dataset.agendaMode;
- setActiveTab("#agendaModes","data-agenda-mode",agendaMode);
- renderAgenda();
-});
-$("#smartSuggestionAction").onclick=()=>go($("#smartSuggestionAction").dataset.smartNav||"tasks");
-const dialog=$("#formDialog"),fields=$("#formFields"),title=$("#formTitle");
-function openForm(kind){
- $("#addSheet").classList.remove("open");
- if(kind==="event"){title.textContent="Ajouter un rendez-vous";fields.innerHTML=`<input type="hidden" name="kind" value="event"><label>Titre<input name="title" required></label><label>Date<input name="date" type="date" value="${state.selectedDate}" required></label><label>Heure<input name="time" type="time" value="10:00" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Professionnel</option><option value="business">Betty & Co</option></select></label><label>Lieu / détail<input name="detail"></label>`}
- if(kind==="task"){title.textContent="Ajouter une tâche";fields.innerHTML=`<input type="hidden" name="kind" value="task"><label>Tâche<input name="title" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Professionnel</option><option value="business">Betty & Co</option></select></label><label>Échéance<input name="due" type="date" value="${todayISO()}" required></label><label>Heure (facultatif)<input name="time" type="time"></label><label>Priorité<select name="priority"><option value="normal">Normale</option><option value="important">Importante</option><option value="urgent">Urgente</option></select></label><label>Report automatique<select name="report">
-<option value="tomorrow">Au lendemain</option>
-<option value="next-workday">Au prochain jour travaillé</option>
-<option value="next-free-day">Au prochain jour libre</option>
-<option value="until-done">Chaque jour jusqu’à ce que ce soit fait</option>
-<option value="none">Aucun report automatique</option>
-</select></label>`}
- if(kind==="expense"){title.textContent="Ajouter une dépense";fields.innerHTML=`<input type="hidden" name="kind" value="expense"><label>Libellé<input name="title" required></label><label>Montant<input name="amount" type="number" min="0" step="0.01" required></label><label>Catégorie<input name="cat" value="Divers"></label>`}
- if(kind==="projectTask"){title.textContent="Ajouter une étape Betty & Co";fields.innerHTML=`<input type="hidden" name="kind" value="projectTask"><label>Nouvelle étape<input name="title" required></label>`}
- dialog.showModal();
-}
-$$("[data-add]").forEach(b=>b.onclick=()=>openForm(b.dataset.add));$("#closeDialog").onclick=()=>dialog.close();
-$("#dynamicForm").onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),kind=f.get("kind");
- if(kind==="event")state.events.push({id:Date.now(),date:f.get("date"),time:f.get("time"),title:f.get("title"),type:f.get("type"),detail:f.get("detail")});
- if(kind==="task")state.tasks.push({id:Date.now(),title:f.get("title"),type:f.get("type"),priority:f.get("priority"),due:f.get("due"),time:f.get("time")||"",report:f.get("report"),done:false});
- if(kind==="expense")state.expenses.unshift({id:Date.now(),date:todayISO(),title:f.get("title"),amount:Number(f.get("amount")),cat:f.get("cat")});
- if(kind==="projectTask")state.projectTasks.push({id:Date.now(),title:f.get("title"),done:false});
- save();dialog.close();render();
-};
-$$(".moods button").forEach(b=>b.onclick=()=>{$$(".moods button").forEach(x=>x.classList.remove("active"));b.classList.add("active")});
-$("#energy").oninput=e=>$("#energyOut").textContent=e.target.value+"/5";$("#stress").oninput=e=>$("#stressOut").textContent=e.target.value+"/5";
-$("#saveJournal").onclick=()=>{const mood=$(".moods .active").textContent;state.journal.push({id:Date.now(),date:todayISO(),mood,energy:$("#energy").value,stress:$("#stress").value,proud:$("#proud").value,gratitude:$("#gratitude").value,text:$("#journalText").value});save();$("#saveJournal").textContent="Bilan enregistré ✓";setTimeout(()=>$("#saveJournal").textContent="Enregistrer mon bilan",1500)};
-(function buildCalendar(){const root=$("#calendar"),start=new Date();for(let i=0;i<10;i++){const d=new Date(start);d.setDate(start.getDate()+i);const iso=d.toISOString().slice(0,10),b=document.createElement("button");b.className="day-chip"+(iso===state.selectedDate?" active":"");b.innerHTML=`<small>${d.toLocaleDateString("fr-FR",{weekday:"short"})}</small><b>${d.getDate()}</b>`;b.onclick=()=>{state.selectedDate=iso;save();$$(".day-chip").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderAgenda()};root.appendChild(b)}})();
-setTimeout(()=>$("#splash").classList.add("hide"),1000);
-render();
-if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js").catch(()=>{});
+function renderTasks(){const list=taskTab==="all"?state.tasks:state.tasks.filter(t=>t.type===taskTab);$("#taskOpenCount").textContent=list.filter(t=>!t.done).length;$("#taskRows").innerHTML=list.sort((a,b)=>Number(a.done)-Number(b.done)).map(taskMarkup).join("");bindRows()}
+function renderRoutines(){const root=$("#routineContent"),items=visibleHabits();$("#routineModeLabel").textContent=dayLabel[state.dayMode];if(routineTab==="today"){const groups=[...new Set(items.map(x=>x.group))];root.innerHTML=groups.map(g=>`<div class="paper-card"><div class="section-title"><h3>${g}</h3></div>${items.filter(x=>x.group===g).map(habitMarkup).join("")}</div>`).join("")}else if(routineTab==="stats"){const done=items.filter(x=>x.done).length,p=items.length?Math.round(done/items.length*100):0;root.innerHTML=`<div class="summary-card"><div><span>Régularité</span><ul><li><b>Réalisées</b><strong>${done}</strong></li><li><b>Restantes</b><strong>${items.length-done}</strong></li></ul></div><div class="progress-donut" style="--progress:${p}%"><span>${p}%</span><small>Aujourd’hui</small></div></div>`}else{root.innerHTML=`<div class="paper-card"><div class="row"><div class="row-main"><b>💼 Routine Travail</b><small>Hydratation, organisation, préparation du lendemain.</small></div><button class="brown-button" data-profile="work">Utiliser</button></div><div class="row"><div class="row-main"><b>🏡 Routine Repos</b><small>Sport, balade, courses et projets.</small></div><button class="brown-button" data-profile="rest">Utiliser</button></div><div class="row"><div class="row-main"><b>✈️ Routine Vacances</b><small>Hydratation, dépenses voyage et souvenirs.</small></div><button class="brown-button" data-profile="vacation">Utiliser</button></div></div>`}bindRows();$$("[data-profile]").forEach(b=>b.onclick=()=>{state.dayMode=b.dataset.profile;save();routineTab="today";render()})}
+function renderBudget(){const spent=state.expenses.reduce((s,e)=>s+Number(e.amount),0),left=remaining(),used=Math.min(100,Math.round((spent+state.savings)/state.income*100)),d=new Date(),days=new Date(d.getFullYear(),d.getMonth()+1,0).getDate()-d.getDate();$("#budgetMain").textContent=Math.round(left)+" €";$("#budgetLine").style.width=used+"%";$("#budgetCaption").textContent=`${used}% utilisé ou épargné`;$("#budgetIncome").textContent=state.income+" €";$("#budgetExpenses").textContent=Math.round(spent)+" €";$("#budgetSavings").textContent=state.savings+" €";$("#budgetDays").textContent=days;$("#expenseRows").innerHTML=state.expenses.map(e=>`<div class="row"><div class="row-main"><b>${e.title}</b><small>${e.cat} · ${fmt(e.date,{day:"numeric",month:"short"})}</small></div><strong>− ${Number(e.amount).toFixed(2).replace(".",",")} €</strong></div>`).join("")}
+function renderProjects(){const done=state.projectTasks.filter(x=>x.done).length,p=Math.round(done/state.projectTasks.length*100);$("#businessLine").style.width=p+"%";$("#businessCaption").textContent=`Progression : ${p}%`;$("#projectRows").innerHTML=state.projectTasks.map(t=>`<div class="row ${t.done?"done":""}" data-project="${t.id}"><button class="circle-check">${t.done?"✓":""}</button><div class="row-main"><b>${t.title}</b><small>Étape Betty & Co</small></div></div>`).join("");bindRows()}
+function renderNotifications(){const unread=state.notifications.filter(x=>!x.read).length;$("#notifBadge").textContent=unread;$("#notifBadge").style.display=unread?"block":"none";$("#notificationRows").innerHTML=state.notifications.map(n=>`<div class="row"><div class="row-main"><b>${n.title}</b><small>${n.text}</small></div></div>`).join("")}
+function renderStats(){const spent=state.expenses.reduce((s,e)=>s+Number(e.amount),0);$("#statsProductivity").textContent=progress()+"%";$("#statsSpend").textContent=Math.round(spent)+" €";$("#statsRemaining").textContent=Math.round(remaining())+" €"}
+function bindRows(){$$("[data-task] .circle-check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest("[data-task]").dataset.task));t.done=!t.done;save();render();toast(t.done?"Tâche terminée ✨":"Tâche réactivée")});$$("[data-habit] .circle-check").forEach(b=>b.onclick=()=>{const h=state.habits.find(x=>x.id===Number(b.closest("[data-habit]").dataset.habit));h.done=!h.done;save();render();toast(h.done?"Habitude réalisée 🌿":"Habitude réactivée")});$$("[data-project] .circle-check").forEach(b=>b.onclick=()=>{const t=state.projectTasks.find(x=>x.id===Number(b.closest("[data-project]").dataset.project));t.done=!t.done;save();render()})}
+function go(screen){$$(".screen").forEach(s=>s.classList.toggle("active",s.dataset.screen===screen));$$(".bottom-nav [data-go]").forEach(b=>b.classList.toggle("active",b.dataset.go===screen));$("#sideMenu").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"})}
+$$("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));$("#openMenu").onclick=()=>$("#sideMenu").classList.add("open");$("#openNotifications").onclick=()=>$("#notificationDrawer").classList.add("open");$$("[data-close]").forEach(b=>b.onclick=()=>$("#"+b.dataset.close).classList.remove("open"));$("#dayModeButton").onclick=()=>$("#daySheet").classList.add("open");$$("[data-day]").forEach(b=>b.onclick=()=>{state.dayMode=b.dataset.day;save();$("#daySheet").classList.remove("open");render()});$("#markRead").onclick=()=>{state.notifications.forEach(n=>n.read=true);save();renderNotifications()};$("#smartAction").onclick=()=>go($("#smartAction").dataset.smartGo||"tasks");
+$$("[data-agenda]").forEach(b=>b.onclick=()=>{agendaMode=b.dataset.agenda;$$("[data-agenda]").forEach(x=>x.classList.toggle("active",x===b));renderAgenda()});$("#prevDate").onclick=()=>{state.selectedDate=addDays(state.selectedDate,-1);save();renderAgenda()};$("#nextDate").onclick=()=>{state.selectedDate=addDays(state.selectedDate,1);save();renderAgenda()};
+$$("[data-task-tab]").forEach(b=>b.onclick=()=>{taskTab=b.dataset.taskTab;$$("[data-task-tab]").forEach(x=>x.classList.toggle("active",x===b));renderTasks()});$$("[data-routine-tab]").forEach(b=>b.onclick=()=>{routineTab=b.dataset.routineTab;$$("[data-routine-tab]").forEach(x=>x.classList.toggle("active",x===b));renderRoutines()});
+const dialog=$("#formDialog"),fields=$("#formFields");
+function openForm(kind){$("#formTitle").textContent=kind==="event"?"Ajouter un rendez-vous":kind==="task"?"Ajouter une tâche":kind==="habit"?"Ajouter une habitude":kind==="expense"?"Ajouter une dépense":"Ajouter une étape";if(kind==="event")fields.innerHTML=`<input type="hidden" name="kind" value="event"><label>Titre<input name="title" required></label><label>Date<input type="date" name="date" value="${state.selectedDate}"></label><label>Heure<input type="time" name="time" value="10:00"></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Travail</option><option value="business">Betty & Co</option></select></label><label>Détail<input name="detail"></label>`;if(kind==="task")fields.innerHTML=`<input type="hidden" name="kind" value="task"><label>Tâche<input name="title" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Travail</option><option value="business">Betty & Co</option></select></label><label>Date<input type="date" name="due" value="${state.selectedDate}"></label><label>Heure facultative<input type="time" name="time"></label><label>Priorité<select name="priority"><option value="low">Basse</option><option value="normal">Moyenne</option><option value="important">Importante</option></select></label><label>Report<select name="report"><option value="tomorrow">Au lendemain</option><option value="next-workday">Au prochain jour travaillé</option><option value="next-free-day">Au prochain jour libre</option><option value="until-done">Chaque jour jusqu’à fait</option><option value="none">Sans report automatique</option></select></label>`;if(kind==="expense")fields.innerHTML=`<input type="hidden" name="kind" value="expense"><label>Libellé<input name="title" required></label><label>Montant<input type="number" step="0.01" name="amount" required></label><label>Catégorie<input name="cat" value="Divers"></label>`;if(kind==="habit")fields.innerHTML=`<input type="hidden" name="kind" value="habit"><label>Habitude<input name="title" required></label><label>Moment<select name="group"><option>Matin</option><option>Soir</option></select></label>`;if(kind==="projectTask")fields.innerHTML=`<input type="hidden" name="kind" value="projectTask"><label>Nouvelle étape<input name="title" required></label>`;dialog.showModal()}
+$$("[data-add]").forEach(b=>b.onclick=()=>openForm(b.dataset.add));$("#closeDialog").onclick=()=>dialog.close();$("#dynamicForm").onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),k=f.get("kind");if(k==="event")state.events.push({id:Date.now(),date:f.get("date"),time:f.get("time"),title:f.get("title"),type:f.get("type"),detail:f.get("detail")});if(k==="task")state.tasks.push({id:Date.now(),title:f.get("title"),type:f.get("type"),priority:f.get("priority"),due:f.get("due"),time:f.get("time"),report:f.get("report"),done:false});if(k==="expense")state.expenses.unshift({id:Date.now(),date:isoToday(),title:f.get("title"),amount:Number(f.get("amount")),cat:f.get("cat")});if(k==="habit")state.habits.push({id:Date.now(),title:f.get("title"),group:f.get("group"),modes:["work","rest","vacation","sick"],done:false});if(k==="projectTask")state.projectTasks.push({id:Date.now(),title:f.get("title"),done:false});save();dialog.close();render()};
+$$(".moods button").forEach(b=>b.onclick=()=>{$$(".moods button").forEach(x=>x.classList.remove("active"));b.classList.add("active")});$("#energy").oninput=e=>$("#energyValue").textContent=e.target.value+"/5";$("#stress").oninput=e=>$("#stressValue").textContent=e.target.value+"/5";$("#saveJournal").onclick=()=>{state.journal.push({id:Date.now(),date:isoToday(),mood:$(".moods .active").textContent,energy:$("#energy").value,stress:$("#stress").value,proud:$("#proud").value,gratitude:$("#gratitude").value,text:$("#journalText").value});save();toast("Bilan enregistré 🌙")};
+setTimeout(()=>$("#splash").classList.add("hide"),1000);render();if("serviceWorker"in navigator)navigator.serviceWorker.register("service-worker.js").catch(()=>{});
