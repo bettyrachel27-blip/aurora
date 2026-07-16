@@ -1,210 +1,235 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="theme-color" content="#7a5b42"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#6f513d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Aurora">
   <title>Aurora — Mon Univers</title>
-  <link rel="manifest" href="manifest.webmanifest"/>
-  <link rel="stylesheet" href="style.css?v=1"/>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <div id="splash" class="splash">
-    <div class="aurora-mark">☀</div>
+    <div class="sun-logo"><span></span></div>
     <h1>Aurora</h1>
     <p>Bienvenue dans ton Univers</p>
   </div>
 
-  <div class="app-shell">
+  <div class="app">
     <header class="topbar">
       <div>
-        <div class="eyebrow" id="todayDate"></div>
+        <small id="dateLabel"></small>
         <h1 id="greeting">Bonjour Betty</h1>
       </div>
       <div class="top-actions">
-        <button class="weather-chip" id="weatherBtn">☀ 23°</button>
-        <button class="icon-btn" id="notifBtn" aria-label="Notifications">🔔<span id="notifCount">3</span></button>
+        <button id="weatherBtn" class="chip" title="Météo de démonstration">☀ 23°</button>
+        <button id="notifBtn" class="round-btn">🔔<b id="notifBadge">3</b></button>
       </div>
     </header>
 
-    <main id="app">
-      <section class="page active" data-page="home">
-        <article class="hero-card">
-          <div class="hero-flower">✿</div>
-          <div>
-            <span class="pill" id="dayTypePill">💼 Travail</span>
+    <main>
+      <section class="view active" data-view="home">
+        <article class="hero">
+          <div class="hero-art">✤</div>
+          <div class="hero-copy">
+            <button id="dayTypeBtn" class="day-type">💼 Travail ▾</button>
             <h2 id="heroTitle">Ta journée est prête</h2>
-            <p id="heroSummary">2 rendez-vous, 4 tâches et une routine adaptée à ton énergie.</p>
+            <p id="heroText">Aurora rassemble tes rendez-vous, tes priorités et ta routine.</p>
           </div>
-          <button class="gold-btn" data-go="today">Voir ma journée</button>
+          <button class="primary" data-nav="today">Voir ma journée</button>
         </article>
 
-        <article class="universe-card">
-          <span class="section-kicker">Message de l’univers</span>
-          <blockquote id="universeMessage">Tu n’as pas besoin de tout faire aujourd’hui. Avance simplement vers ce qui compte.</blockquote>
+        <article class="message-card">
+          <span>Message de l’univers</span>
+          <blockquote id="messageOfDay">Avance doucement, mais avance vers ce qui compte vraiment pour toi.</blockquote>
         </article>
 
-        <section class="quick-grid">
-          <button class="quick-card" data-go="agenda"><b>📅 2</b><span>Rendez-vous</span><small>Prochain à 10 h 30</small></button>
-          <button class="quick-card" data-go="tasks"><b>✓ 4</b><span>Tâches</span><small>2 prioritaires</small></button>
-          <button class="quick-card" data-go="habits"><b>🌿 3/6</b><span>Routine</span><small>50 % réalisée</small></button>
-          <button class="quick-card" data-go="budget"><b>€ 623</b><span>Disponible</span><small>jusqu’à fin du mois</small></button>
+        <div class="summary-grid">
+          <button data-nav="agenda"><strong id="eventCount">0</strong><span>Rendez-vous</span><small id="nextEvent">Aucun aujourd’hui</small></button>
+          <button data-nav="tasks"><strong id="taskCount">0</strong><span>Tâches</span><small id="priorityCount">0 prioritaire</small></button>
+          <button data-nav="habits"><strong id="habitProgress">0/0</strong><span>Routine</span><small id="habitPercent">0 % réalisée</small></button>
+          <button data-nav="budget"><strong id="budgetRemaining">0 €</strong><span>Disponible</span><small>jusqu’à la fin du mois</small></button>
+        </div>
+
+        <section class="block">
+          <div class="block-title"><h3>Timeline du jour</h3><button data-nav="today">Tout voir</button></div>
+          <div id="homeTimeline" class="list"></div>
         </section>
 
-        <section class="section">
-          <div class="section-head"><h3>À venir</h3><button data-go="agenda">Tout voir</button></div>
-          <div id="homeEvents" class="stack"></div>
+        <section class="block">
+          <div class="block-title"><h3>Priorités</h3><button data-nav="tasks">Organiser</button></div>
+          <div id="homePriorities" class="list"></div>
         </section>
 
-        <section class="section">
-          <div class="section-head"><h3>Priorités</h3><button data-go="tasks">Organiser</button></div>
-          <div id="homeTasks" class="stack"></div>
-        </section>
-
-        <article class="project-card">
-          <div><span class="section-kicker">Aurora Projects</span><h3>Betty & Co Créations</h3><p>Prochaine petite action : préparer 3 idées de produits.</p></div>
-          <div class="progress-ring"><span>45%</span></div>
-          <button class="outline-btn" data-go="projects">Continuer mon projet</button>
+        <article class="coach-card">
+          <div>
+            <span>Aurora te propose</span>
+            <h3 id="coachTitle">Une petite action pour Betty & Co</h3>
+            <p id="coachText">Consacre 15 minutes à noter trois idées de produits.</p>
+          </div>
+          <button data-nav="projects" class="secondary">Avancer</button>
         </article>
       </section>
 
-      <section class="page" data-page="today">
-        <div class="page-title"><button class="back-btn" data-go="home">←</button><div><span>Aurora Today</span><h2>Aujourd’hui</h2></div></div>
-        <article class="day-score">
-          <div><span>Équilibre du jour</span><strong id="dayScore">62%</strong></div>
-          <div class="bar"><i id="dayScoreBar" style="width:62%"></i></div>
-          <p id="dayScoreText">Ta journée avance bien. Deux priorités restent à terminer.</p>
+      <section class="view" data-view="today">
+        <div class="page-head"><button class="back" data-nav="home">←</button><div><small>Aurora Today</small><h2>Aujourd’hui</h2></div></div>
+        <article class="score-card">
+          <div><span>Équilibre du jour</span><strong id="scoreValue">0%</strong></div>
+          <div class="progress"><i id="scoreBar"></i></div>
+          <p id="scoreMessage">Chaque petite action compte.</p>
         </article>
-        <div class="segmented">
+
+        <div class="tabs" id="todayFilters">
           <button class="active" data-filter="all">Tout</button>
           <button data-filter="personal">Perso</button>
           <button data-filter="work">Pro</button>
+          <button data-filter="business">Betty & Co</button>
         </div>
-        <section class="section"><h3>Rendez-vous</h3><div id="todayEvents" class="stack"></div></section>
-        <section class="section"><h3>Tâches du jour</h3><div id="todayTasks" class="stack"></div></section>
-        <section class="section"><h3>Routine adaptée</h3><div id="todayHabits" class="stack"></div></section>
-        <button class="night-btn" data-go="journal">🌙 Faire mon rituel du soir</button>
+
+        <section class="block"><h3>Rendez-vous</h3><div id="todayEvents" class="list"></div></section>
+        <section class="block"><h3>Tâches</h3><div id="todayTasks" class="list"></div></section>
+        <section class="block"><h3>Routine adaptée</h3><div id="todayHabits" class="list"></div></section>
+        <button class="night-button" data-nav="journal">🌙 Faire mon rituel du soir</button>
       </section>
 
-      <section class="page" data-page="agenda">
-        <div class="page-title"><button class="back-btn" data-go="home">←</button><div><span>Aurora Agenda</span><h2>Mon agenda</h2></div></div>
-        <div class="calendar-strip" id="calendarStrip"></div>
-        <div class="section-head"><h3 id="selectedDateTitle">Aujourd’hui</h3><button class="gold-mini" data-add="event">+ Rendez-vous</button></div>
+      <section class="view" data-view="agenda">
+        <div class="page-head"><button class="back" data-nav="home">←</button><div><small>Aurora Agenda</small><h2>Mon agenda</h2></div></div>
+        <div class="calendar" id="calendar"></div>
+        <div class="block-title"><h3 id="agendaDateTitle">Aujourd’hui</h3><button class="mini-primary" data-add="event">+ Rendez-vous</button></div>
         <div id="agendaList" class="timeline"></div>
       </section>
 
-      <section class="page" data-page="tasks">
-        <div class="page-title"><button class="back-btn" data-go="home">←</button><div><span>Aurora Organisation</span><h2>Mes tâches</h2></div></div>
-        <div class="segmented">
-          <button class="active" data-taskfilter="all">Toutes</button>
-          <button data-taskfilter="work">Pro</button>
-          <button data-taskfilter="personal">Perso</button>
+      <section class="view" data-view="tasks">
+        <div class="page-head"><button class="back" data-nav="home">←</button><div><small>Aurora Organisation</small><h2>Mes tâches</h2></div></div>
+        <div class="tabs" id="taskFilters">
+          <button class="active" data-task-filter="all">Toutes</button>
+          <button data-task-filter="personal">Perso</button>
+          <button data-task-filter="work">Pro</button>
+          <button data-task-filter="business">Betty & Co</button>
         </div>
-        <button class="gold-btn full" data-add="task">+ Ajouter une tâche</button>
-        <div id="taskList" class="stack roomy"></div>
+        <button class="primary full" data-add="task">+ Ajouter une tâche</button>
+        <div class="info-banner">Les tâches non faites peuvent être reportées au lendemain ou au prochain jour travaillé.</div>
+        <div id="taskList" class="list spacious"></div>
       </section>
 
-      <section class="page" data-page="habits">
-        <div class="page-title"><button class="back-btn" data-go="home">←</button><div><span>Aurora Habits</span><h2>Mes habitudes</h2></div></div>
-        <article class="info-card"><b>Routine intelligente</b><p>Aurora adapte les habitudes selon ton type de journée, ton énergie et ce que tu réalises réellement.</p></article>
-        <div class="habit-tabs">
-          <button class="active">Aujourd’hui</button><button>Statistiques</button><button>Routines</button>
+      <section class="view" data-view="habits">
+        <div class="page-head"><button class="back" data-nav="home">←</button><div><small>Aurora Habits</small><h2>Mes habitudes</h2></div></div>
+        <article class="adaptive-card">
+          <strong>Routine intelligente</strong>
+          <p>Aurora adapte les habitudes au type de journée sélectionné. Les changements importants restent toujours soumis à ton accord.</p>
+        </article>
+        <div class="tabs" id="habitTabs">
+          <button class="active" data-habit-tab="today">Aujourd’hui</button>
+          <button data-habit-tab="stats">Statistiques</button>
+          <button data-habit-tab="routines">Routines</button>
         </div>
-        <div id="habitList" class="stack roomy"></div>
+        <div id="habitContent" class="list spacious"></div>
       </section>
 
-      <section class="page" data-page="budget">
-        <div class="page-title"><button class="back-btn" data-go="home">←</button><div><span>Aurora Budget</span><h2>Mes finances</h2></div></div>
-        <article class="budget-hero">
-          <span>Disponible ce mois-ci</span><strong id="remainingBudget">623 €</strong>
-          <div class="bar"><i style="width:68%"></i></div><small>68 % du budget utilisé</small>
+      <section class="view" data-view="budget">
+        <div class="page-head"><button class="back" data-nav="home">←</button><div><small>Aurora Budget</small><h2>Mes finances</h2></div></div>
+        <article class="budget-card">
+          <span>Disponible ce mois-ci</span>
+          <strong id="budgetBig">0 €</strong>
+          <div class="progress"><i id="budgetBar"></i></div>
+          <small id="budgetStatus"></small>
         </article>
         <div class="finance-grid">
-          <article><span>Revenus</span><b>2 300 €</b></article>
-          <article><span>Dépenses</span><b>1 677 €</b></article>
-          <article><span>Épargne</span><b>100 €</b></article>
-          <article><span>Jours restants</span><b>15</b></article>
+          <article><span>Revenus</span><b id="incomeValue">0 €</b></article>
+          <article><span>Dépenses</span><b id="expenseValue">0 €</b></article>
+          <article><span>Épargne</span><b id="savingValue">0 €</b></article>
+          <article><span>Jours restants</span><b id="daysLeft">0</b></article>
         </div>
-        <button class="gold-btn full" data-add="expense">+ Ajouter une dépense</button>
-        <section class="section"><h3>Dernières dépenses</h3><div id="expenseList" class="stack"></div></section>
+        <button class="primary full" data-add="expense">+ Ajouter une dépense</button>
+        <section class="block"><h3>Dernières dépenses</h3><div id="expenseList" class="list"></div></section>
       </section>
 
-      <section class="page" data-page="journal">
-        <div class="page-title"><button class="back-btn" data-go="home">←</button><div><span>Aurora Journal</span><h2>Mon rituel du soir</h2></div></div>
-        <article class="journal-card">
+      <section class="view" data-view="journal">
+        <div class="page-head"><button class="back" data-nav="home">←</button><div><small>Aurora Journal</small><h2>Rituel du soir</h2></div></div>
+        <article class="journal">
           <h3>Comment s’est passée ta journée ?</h3>
           <div class="moods" id="moods"><button>😞</button><button>😕</button><button class="active">🙂</button><button>😊</button><button>🤩</button></div>
-          <label>Énergie <input id="energy" type="range" min="1" max="5" value="3"></label>
-          <label>Stress <input id="stress" type="range" min="1" max="5" value="2"></label>
-          <label>Je suis fière de…<textarea id="proudText" placeholder="Écris une petite victoire"></textarea></label>
-          <label>Gratitude<textarea id="gratitudeText" placeholder="Aujourd’hui, je remercie…"></textarea></label>
+          <label>Énergie <output id="energyOut">3/5</output><input id="energy" type="range" min="1" max="5" value="3"></label>
+          <label>Stress <output id="stressOut">2/5</output><input id="stress" type="range" min="1" max="5" value="2"></label>
+          <label>Je suis fière de…<textarea id="proud" placeholder="Une petite victoire suffit"></textarea></label>
+          <label>Gratitude<textarea id="gratitude" placeholder="Aujourd’hui, je remercie…"></textarea></label>
           <label>Mes pensées<textarea id="journalText" placeholder="Écris librement"></textarea></label>
-          <button class="gold-btn full" id="saveJournal">Enregistrer mon bilan</button>
+          <button id="saveJournal" class="primary full">Enregistrer mon bilan</button>
         </article>
       </section>
 
-      <section class="page" data-page="projects">
-        <div class="page-title"><button class="back-btn" data-go="home">←</button><div><span>Aurora Projects</span><h2>Mes projets</h2></div></div>
-        <article class="project-big">
-          <span class="pill">Auto-entreprise</span>
+      <section class="view" data-view="projects">
+        <div class="page-head"><button class="back" data-nav="home">←</button><div><small>Aurora Projects</small><h2>Betty & Co</h2></div></div>
+        <article class="project-hero">
+          <span>Auto-entreprise</span>
           <h3>Betty & Co Créations</h3>
-          <p>Objectif : préparer un lancement simple, élégant et réaliste.</p>
-          <div class="bar"><i style="width:45%"></i></div>
-          <small>Progression globale : 45 %</small>
+          <p>Transformer tes idées créatives en un projet simple, visible et rentable.</p>
+          <div class="progress"><i id="projectBar"></i></div>
+          <small id="projectProgressText"></small>
         </article>
-        <section class="section"><h3>Prochaines étapes</h3>
-          <div class="stack">
-            <label class="check-row"><input type="checkbox" checked><span>Définir l’identité visuelle</span></label>
-            <label class="check-row"><input type="checkbox"><span>Choisir 5 produits de lancement</span></label>
-            <label class="check-row"><input type="checkbox"><span>Créer une page Instagram</span></label>
-            <label class="check-row"><input type="checkbox"><span>Préparer le premier budget</span></label>
-          </div>
-        </section>
-        <article class="coach-card"><span>Aurora te propose</span><h3>Une action de 15 minutes</h3><p>Note trois idées de bijoux que tu aimerais vraiment créer cette semaine.</p><button class="outline-btn">Je commence</button></article>
+        <section class="block"><div class="block-title"><h3>Étapes du projet</h3><button data-add="projectTask">+ Étape</button></div><div id="projectTasks" class="list"></div></section>
+        <article class="coach-dark">
+          <span>Encouragement Aurora</span>
+          <h3>Chaque petite action construit ton entreprise.</h3>
+          <p>Tu n’as pas besoin de tout lancer en même temps. Une étape claire aujourd’hui vaut mieux que dix idées repoussées.</p>
+        </article>
       </section>
     </main>
 
     <nav class="bottom-nav">
-      <button class="active" data-go="home">⌂<span>Accueil</span></button>
-      <button data-go="agenda">◫<span>Agenda</span></button>
-      <button class="add-main" id="addMain">＋</button>
-      <button data-go="tasks">✓<span>Organisation</span></button>
-      <button data-go="journal">✦<span>Mon Univers</span></button>
+      <button class="active" data-nav="home">⌂<span>Accueil</span></button>
+      <button data-nav="agenda">▣<span>Agenda</span></button>
+      <button id="openAdd" class="main-add">＋</button>
+      <button data-nav="tasks">✓<span>Organisation</span></button>
+      <button data-nav="journal">✦<span>Mon Univers</span></button>
     </nav>
   </div>
 
-  <div class="drawer" id="notifDrawer">
-    <div class="drawer-head"><h3>Notifications</h3><button data-close="notif">✕</button></div>
-    <div class="stack">
-      <article class="notification unread"><b>📅 Rendez-vous dans 1 h</b><p>Dentiste à 10 h 30.</p></article>
-      <article class="notification unread"><b>💼 Travail</b><p>Deux tâches importantes restent à faire.</p></article>
-      <article class="notification unread"><b>💰 Budget</b><p>Il te reste 623 € jusqu’à la fin du mois.</p></article>
+  <aside id="notifications" class="drawer">
+    <div class="drawer-head"><h3>Notifications</h3><button data-close="notifications">✕</button></div>
+    <div id="notificationList" class="list"></div>
+    <button id="readAll" class="secondary full">Tout marquer comme lu</button>
+  </aside>
+
+  <div id="dayTypeSheet" class="overlay">
+    <div class="sheet">
+      <div class="drawer-head"><h3>Type de journée</h3><button data-close="dayTypeSheet">✕</button></div>
+      <div class="choice-grid">
+        <button data-day-type="work">💼<span>Travail</span></button>
+        <button data-day-type="rest">🏡<span>Repos</span></button>
+        <button data-day-type="vacation">✈️<span>Vacances</span></button>
+        <button data-day-type="sick">🌿<span>Repos santé</span></button>
+      </div>
     </div>
-    <button class="outline-btn full" id="markRead">Tout marquer comme lu</button>
   </div>
 
-  <div class="sheet" id="addSheet">
-    <div class="sheet-card">
-      <div class="drawer-head"><h3>Ajouter</h3><button data-close="add">✕</button></div>
-      <div class="add-grid">
+  <div id="addSheet" class="overlay">
+    <div class="sheet">
+      <div class="drawer-head"><h3>Ajouter</h3><button data-close="addSheet">✕</button></div>
+      <div class="choice-grid">
         <button data-add="event">📅<span>Rendez-vous</span></button>
         <button data-add="task">✓<span>Tâche</span></button>
         <button data-add="expense">€<span>Dépense</span></button>
-        <button data-go="habits">🌿<span>Habitude</span></button>
-        <button data-go="journal">🌙<span>Journal</span></button>
-        <button data-go="projects">🚀<span>Projet</span></button>
+        <button data-nav="habits">🌿<span>Habitude</span></button>
+        <button data-nav="journal">🌙<span>Journal</span></button>
+        <button data-nav="projects">🚀<span>Betty & Co</span></button>
       </div>
     </div>
   </div>
 
   <dialog id="formDialog">
-    <form method="dialog" id="dynamicForm">
-      <div class="drawer-head"><h3 id="formTitle">Ajouter</h3><button value="cancel">✕</button></div>
+    <form id="dynamicForm">
+      <div class="drawer-head"><h3 id="formTitle">Ajouter</h3><button type="button" id="closeDialog">✕</button></div>
       <div id="formFields"></div>
-      <button class="gold-btn full" value="default" id="formSave">Enregistrer</button>
+      <button class="primary full" type="submit">Enregistrer</button>
     </form>
   </dialog>
 
-  <script src="app.js?v=1"></script>
+  <div class="version">Aurora Alpha 0.3</div>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
