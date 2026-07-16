@@ -1,4 +1,4 @@
-const STORAGE_KEY="aurora-alpha-03";
+const STORAGE_KEY="aurora-alpha-04";
 const todayISO=()=>new Date().toISOString().slice(0,10);
 const defaultState={
  dayType:"work",
@@ -11,9 +11,9 @@ const defaultState={
  ],
  tasks:[
   {id:1,title:"Commander les boissons",type:"work",priority:"urgent",due:todayISO(),report:"next-workday",done:false},
-  {id:2,title:"Appeler la mutuelle",type:"personal",priority:"important",due:todayISO(),report:"tomorrow",done:false},
+  {id:2,title:"Appeler la mutuelle",type:"personal",priority:"important",due:todayISO(),report:"until-done",done:false},
   {id:3,title:"Vérifier le planning équipe",type:"work",priority:"important",due:todayISO(),report:"next-workday",done:true},
-  {id:4,title:"Acheter les croquettes",type:"personal",priority:"normal",due:todayISO(),report:"tomorrow",done:false}
+  {id:4,title:"Acheter les croquettes",type:"personal",priority:"normal",due:todayISO(),report:"next-free-day",done:false}
  ],
  habits:[
   {id:1,title:"Boire 2 L d’eau",dayTypes:["work","rest","vacation","sick"],meta:"3/8 verres",done:false},
@@ -47,10 +47,39 @@ const $=(s,e=document)=>e.querySelector(s), $$=(s,e=document)=>[...e.querySelect
 function loadState(){try{return {...structuredClone(defaultState),...JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")}}catch{return structuredClone(defaultState)}}
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
 function dateAdd(iso,days){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
-function nextWorkday(iso){let d=iso;do{d=dateAdd(d,1)}while([0,6].includes(new Date(d+"T12:00:00").getDay()));return d}
+function nextWorkday(iso){
+ let d=iso;
+ do{d=dateAdd(d,1)}while([0,6].includes(new Date(d+"T12:00:00").getDay()));
+ return d
+}
+function nextFreeDay(iso){
+ let d=iso;
+ do{d=dateAdd(d,1)}while(![0,6].includes(new Date(d+"T12:00:00").getDay()));
+ return d
+}
 function applyTaskReports(){
- const today=todayISO();let changed=false;
- state.tasks.forEach(t=>{if(!t.done&&t.due<today){if(t.report==="tomorrow")t.due=today;else if(t.report==="next-workday")t.due=nextWorkday(t.due);changed=true}});
+ const today=todayISO();
+ let changed=false;
+ state.tasks.forEach(t=>{
+  if(t.done || t.due>=today) return;
+  if(t.report==="tomorrow"){
+   t.due=today;
+   changed=true;
+  }else if(t.report==="next-workday"){
+   let next=nextWorkday(t.due);
+   while(next<today) next=nextWorkday(next);
+   t.due=next;
+   changed=true;
+  }else if(t.report==="next-free-day"){
+   let next=nextFreeDay(t.due);
+   while(next<today) next=nextFreeDay(next);
+   t.due=next;
+   changed=true;
+  }else if(t.report==="until-done"){
+   t.due=today;
+   changed=true;
+  }
+ });
  if(changed)save();
 }
 applyTaskReports();
@@ -71,7 +100,17 @@ function setHeader(){
  $("#heroTitle").textContent=texts[state.dayType][0];$("#heroText").textContent=texts[state.dayType][1];
 }
 function eventRow(e){return `<article class="event-row"><span class="time">${e.time}</span><div class="main"><b>${e.title}</b><small>${e.detail||""}</small></div><span class="tag ${e.type}">${typeLabels[e.type]}</span></article>`}
-function taskRow(t){return `<article class="task-row ${t.done?"done":""}" data-task-id="${t.id}"><button class="check">${t.done?"✓":""}</button><div class="main"><b>${t.title}</b><small>${t.report==="next-workday"?"Report : prochain jour travaillé":t.report==="tomorrow"?"Report : lendemain":"Sans report"} · ${formatDate(t.due)}</small></div><span class="tag ${t.type}">${t.priority}</span></article>`}
+function reportLabel(report){
+ const labels={
+  "tomorrow":"Report : lendemain",
+  "next-workday":"Report : prochain jour travaillé",
+  "next-free-day":"Report : prochain jour libre",
+  "until-done":"Reste prioritaire jusqu’à réalisation",
+  "none":"Sans report automatique"
+ };
+ return labels[report]||"Sans report automatique";
+}
+function taskRow(t){return `<article class="task-row ${t.done?"done":""}" data-task-id="${t.id}"><button class="check">${t.done?"✓":""}</button><div class="main"><b>${t.title}</b><small>${reportLabel(t.report)} · ${formatDate(t.due)}</small></div><span class="tag ${t.type}">${t.priority}</span></article>`}
 function habitRow(h){return `<article class="habit-row ${h.done?"done":""}" data-habit-id="${h.id}"><button class="check">${h.done?"✓":""}</button><div class="main"><b>${h.title}</b><small>${h.meta}</small></div><span class="tag personal">Routine</span></article>`}
 function projectRow(t){return `<article class="project-task ${t.done?"done":""}" data-project-id="${t.id}"><button class="check">${t.done?"✓":""}</button><div class="main"><b>${t.title}</b><small>Étape Betty & Co</small></div></article>`}
 function formatDate(iso){return new Date(iso+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}
@@ -139,10 +178,23 @@ function updateScore(){
  const items=[...todayTasks(),...dayHabits()],done=items.filter(x=>x.done).length,pct=items.length?Math.round(done/items.length*100):0;$("#scoreValue").textContent=pct+"%";$("#scoreBar").style.width=pct+"%";$("#scoreMessage").textContent=pct<40?"Commence par une petite action simple.":pct<80?"Ta journée avance bien. Continue à ton rythme.":"Très belle progression aujourd’hui.";
 }
 function bindDynamic(){
- $$(".task-row .check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest(".task-row").dataset.taskId));t.done=!t.done;save();render()});
- $$(".habit-row .check").forEach(b=>b.onclick=()=>{const h=state.habits.find(x=>x.id===Number(b.closest(".habit-row").dataset.habitId));h.done=!h.done;save();render()});
- $$(".project-task .check").forEach(b=>b.onclick=()=>{const t=state.projectTasks.find(x=>x.id===Number(b.closest(".project-task").dataset.projectId));t.done=!t.done;save();render()});
+ $$(".task-row .check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest(".task-row").dataset.taskId));t.done=!t.done;save();render();flashSuccess(t.done?"Tâche terminée ✨":"Tâche réactivée")});
+ $$(".habit-row .check").forEach(b=>b.onclick=()=>{const h=state.habits.find(x=>x.id===Number(b.closest(".habit-row").dataset.habitId));h.done=!h.done;save();render();flashSuccess(h.done?"Habitude réalisée 🌿":"Habitude réactivée")});
+ $$(".project-task .check").forEach(b=>b.onclick=()=>{const t=state.projectTasks.find(x=>x.id===Number(b.closest(".project-task").dataset.projectId));t.done=!t.done;save();render();flashSuccess(t.done?"Tâche terminée ✨":"Tâche réactivée")});
  $$("[data-routine]").forEach(b=>b.onclick=()=>{state.dayType=b.dataset.routine;save();habitTab="today";setActiveTab("#habitTabs","data-habit-tab","today");render()});
+}
+function flashSuccess(message){
+ let toast=document.querySelector(".aurora-toast");
+ if(!toast){
+  toast=document.createElement("div");
+  toast.className="aurora-toast";
+  document.body.appendChild(toast);
+ }
+ toast.textContent=message;
+ toast.classList.remove("show");
+ void toast.offsetWidth;
+ toast.classList.add("show");
+ setTimeout(()=>toast.classList.remove("show"),1800);
 }
 function go(view){$$(".view").forEach(v=>v.classList.toggle("active",v.dataset.view===view));$$(".bottom-nav [data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===view));$("#addSheet").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"})}
 $$("[data-nav]").forEach(b=>b.onclick=()=>go(b.dataset.nav));
@@ -160,7 +212,13 @@ const dialog=$("#formDialog"),fields=$("#formFields"),title=$("#formTitle");
 function openForm(kind){
  $("#addSheet").classList.remove("open");
  if(kind==="event"){title.textContent="Ajouter un rendez-vous";fields.innerHTML=`<input type="hidden" name="kind" value="event"><label>Titre<input name="title" required></label><label>Date<input name="date" type="date" value="${state.selectedDate}" required></label><label>Heure<input name="time" type="time" value="10:00" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Professionnel</option><option value="business">Betty & Co</option></select></label><label>Lieu / détail<input name="detail"></label>`}
- if(kind==="task"){title.textContent="Ajouter une tâche";fields.innerHTML=`<input type="hidden" name="kind" value="task"><label>Tâche<input name="title" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Professionnel</option><option value="business">Betty & Co</option></select></label><label>Échéance<input name="due" type="date" value="${todayISO()}" required></label><label>Priorité<select name="priority"><option value="normal">Normale</option><option value="important">Importante</option><option value="urgent">Urgente</option></select></label><label>Report automatique<select name="report"><option value="tomorrow">Au lendemain</option><option value="next-workday">Au prochain jour travaillé</option><option value="none">Aucun report</option></select></label>`}
+ if(kind==="task"){title.textContent="Ajouter une tâche";fields.innerHTML=`<input type="hidden" name="kind" value="task"><label>Tâche<input name="title" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Professionnel</option><option value="business">Betty & Co</option></select></label><label>Échéance<input name="due" type="date" value="${todayISO()}" required></label><label>Priorité<select name="priority"><option value="normal">Normale</option><option value="important">Importante</option><option value="urgent">Urgente</option></select></label><label>Report automatique<select name="report">
+<option value="tomorrow">Au lendemain</option>
+<option value="next-workday">Au prochain jour travaillé</option>
+<option value="next-free-day">Au prochain jour libre</option>
+<option value="until-done">Chaque jour jusqu’à ce que ce soit fait</option>
+<option value="none">Aucun report automatique</option>
+</select></label>`}
  if(kind==="expense"){title.textContent="Ajouter une dépense";fields.innerHTML=`<input type="hidden" name="kind" value="expense"><label>Libellé<input name="title" required></label><label>Montant<input name="amount" type="number" min="0" step="0.01" required></label><label>Catégorie<input name="cat" value="Divers"></label>`}
  if(kind==="projectTask"){title.textContent="Ajouter une étape Betty & Co";fields.innerHTML=`<input type="hidden" name="kind" value="projectTask"><label>Nouvelle étape<input name="title" required></label>`}
  dialog.showModal();

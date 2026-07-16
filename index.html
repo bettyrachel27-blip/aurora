@@ -10,7 +10,7 @@
   <title>Aurora — Mon Univers</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
   <div id="splash" class="splash">
@@ -19,6 +19,9 @@
     <p>Bienvenue dans ton Univers</p>
   </div>
 
+  <div class="decor decor-mandala decor-one" aria-hidden="true"></div>
+  <div class="decor decor-mandala decor-two" aria-hidden="true"></div>
+  <div class="decor decor-flower decor-three" aria-hidden="true"></div>
   <div class="app">
     <header class="topbar">
       <div>
@@ -112,7 +115,7 @@
           <button data-task-filter="business">Betty & Co</button>
         </div>
         <button class="primary full" data-add="task">+ Ajouter une tâche</button>
-        <div class="info-banner">Les tâches non faites peuvent être reportées au lendemain ou au prochain jour travaillé.</div>
+        <div class="info-banner">Les tâches non faites, personnelles comme professionnelles, sont reportées automatiquement selon la règle choisie.</div>
         <div id="taskList" class="list spacious"></div>
       </section>
 
@@ -229,7 +232,7 @@
     </form>
   </dialog>
 
-  <div class="version">Aurora Alpha 0.3</div>
-  <script src="app.js?v=3"></script>
+  <div class="version">Aurora Alpha 0.4</div>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

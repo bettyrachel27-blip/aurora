@@ -1,20 +1,31 @@
-# Aurora Alpha 0.3
+# Aurora Alpha 0.4
 
-Version interactive avec :
-- accueil dynamique selon le type de journée ;
-- filtres Perso / Pro / Betty & Co ;
-- agenda avec ajout de rendez-vous ;
-- tâches avec échéance et règle de report ;
-- habitudes adaptées au type de journée ;
-- statistiques et routines sélectionnables ;
-- budget et ajout de dépenses ;
-- journal du soir ;
-- espace Betty & Co ;
-- sauvegarde locale.
+## Nouveautés
+
+### Tâches personnelles et professionnelles
+Chaque tâche peut utiliser l’une des règles suivantes :
+- report au lendemain ;
+- report au prochain jour travaillé ;
+- report au prochain jour libre ;
+- affichage chaque jour jusqu’à sa réalisation ;
+- aucun report automatique.
+
+Ces règles fonctionnent pour les tâches personnelles, professionnelles et Betty & Co.
+
+### Nouvelle identité visuelle
+- marron chocolat beaucoup plus présent ;
+- or plus lumineux ;
+- fond beige texturé ;
+- mandalas et fleurs en filigrane ;
+- animations d’ouverture, navigation et progression ;
+- cartes plus profondes ;
+- confirmation animée lorsqu’une tâche ou une habitude est cochée.
 
 ## Mise à jour avec GitHub Desktop
+
 1. Décompresser le ZIP.
 2. Copier tous les fichiers dans `Documents/GitHub/aurora`.
-3. Accepter « Remplacer les fichiers dans la destination ».
-4. Dans GitHub Desktop : Summary `Aurora Alpha 0.3`.
-5. Cliquer `Commit to main`, puis `Push origin`.
+3. Cliquer sur `Remplacer les fichiers dans la destination`.
+4. Dans GitHub Desktop, écrire `Aurora Alpha 0.4`.
+5. Cliquer sur `Commit to main`, puis `Push origin`.
+6. Sur Render, attendre le déploiement automatique ou choisir `Deploy latest commit`.
