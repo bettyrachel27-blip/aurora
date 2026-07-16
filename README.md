@@ -1,31 +1,36 @@
-# Aurora Alpha 0.4
+# Aurora Alpha 0.5
 
-## Nouveautés
+## Design
+- écriture plus aérée et élégante ;
+- titres manuscrits plus féminins ;
+- mandalas, fleurs et dessins en filigrane réellement visibles ;
+- cartes plus espacées ;
+- transitions et animations enrichies ;
+- identité crème, chocolat et or plus affirmée.
 
-### Tâches personnelles et professionnelles
-Chaque tâche peut utiliser l’une des règles suivantes :
-- report au lendemain ;
-- report au prochain jour travaillé ;
-- report au prochain jour libre ;
-- affichage chaque jour jusqu’à sa réalisation ;
-- aucun report automatique.
+## Agenda enrichi
+L’agenda regroupe désormais :
+- les rendez-vous ;
+- les tâches prévues à la même date ;
+- une vue Jour ;
+- une vue Semaine ;
+- une vue Mois ;
+- le nombre de rendez-vous et de tâches pour chaque journée.
 
-Ces règles fonctionnent pour les tâches personnelles, professionnelles et Betty & Co.
+Une tâche peut aussi recevoir une heure facultative pour être mieux positionnée dans la journée.
 
-### Nouvelle identité visuelle
-- marron chocolat beaucoup plus présent ;
-- or plus lumineux ;
-- fond beige texturé ;
-- mandalas et fleurs en filigrane ;
-- animations d’ouverture, navigation et progression ;
-- cartes plus profondes ;
-- confirmation animée lorsqu’une tâche ou une habitude est cochée.
+## Aurora Intelligence
+- priorité suggérée selon l’urgence et les prochains rendez-vous ;
+- accueil adapté à la progression réelle ;
+- message différent selon ce qui reste à faire ;
+- routines adaptées au type de journée ;
+- reports automatiques des tâches personnelles, professionnelles et Betty & Co ;
+- possibilité de cocher les tâches directement depuis l’agenda.
 
-## Mise à jour avec GitHub Desktop
-
+## Installation
 1. Décompresser le ZIP.
 2. Copier tous les fichiers dans `Documents/GitHub/aurora`.
-3. Cliquer sur `Remplacer les fichiers dans la destination`.
-4. Dans GitHub Desktop, écrire `Aurora Alpha 0.4`.
+3. Choisir `Remplacer les fichiers dans la destination`.
+4. Dans GitHub Desktop : `Aurora Alpha 0.5`.
 5. Cliquer sur `Commit to main`, puis `Push origin`.
-6. Sur Render, attendre le déploiement automatique ou choisir `Deploy latest commit`.
+6. Sur Render, attendre le déploiement automatique ou utiliser `Deploy latest commit`.

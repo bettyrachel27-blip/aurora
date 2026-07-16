@@ -1,7 +1,7 @@
 {
-  "name": "Aurora Alpha 0.4 — Mon Univers",
+  "name": "Aurora Alpha 0.5 — Mon Univers",
   "short_name": "Aurora",
-  "start_url": "./?v=4",
+  "start_url": "./?v=5",
   "display": "standalone",
   "background_color": "#f4e9dc",
   "theme_color": "#684631",

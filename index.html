@@ -10,7 +10,7 @@
   <title>Aurora — Mon Univers</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <div id="splash" class="splash">
@@ -22,6 +22,8 @@
   <div class="decor decor-mandala decor-one" aria-hidden="true"></div>
   <div class="decor decor-mandala decor-two" aria-hidden="true"></div>
   <div class="decor decor-flower decor-three" aria-hidden="true"></div>
+  <div class="line-art line-art-left" aria-hidden="true"></div>
+  <div class="line-art line-art-right" aria-hidden="true"></div>
   <div class="app">
     <header class="topbar">
       <div>
@@ -67,6 +69,11 @@
           <div class="block-title"><h3>Priorités</h3><button data-nav="tasks">Organiser</button></div>
           <div id="homePriorities" class="list"></div>
         </section>
+        <article class="daily-evolution-card">
+          <div><span>Évolution de la journée</span><strong id="homeProgressValue">0%</strong></div>
+          <div class="progress"><i id="homeProgressBar"></i></div>
+          <p id="homeProgressText">Aurora adaptera l’accueil à mesure que tu avances.</p>
+        </article>
 
         <article class="coach-card">
           <div>
@@ -85,6 +92,12 @@
           <div class="progress"><i id="scoreBar"></i></div>
           <p id="scoreMessage">Chaque petite action compte.</p>
         </article>
+        <article class="aurora-intelligence-card">
+          <span>Aurora Intelligence</span>
+          <h3 id="smartSuggestionTitle">Ta priorité du moment</h3>
+          <p id="smartSuggestionText">Aurora analyse ta journée pour te proposer la prochaine action la plus utile.</p>
+          <button id="smartSuggestionAction" class="secondary">Voir la suggestion</button>
+        </article>
 
         <div class="tabs" id="todayFilters">
           <button class="active" data-filter="all">Tout</button>
@@ -101,8 +114,14 @@
 
       <section class="view" data-view="agenda">
         <div class="page-head"><button class="back" data-nav="home">←</button><div><small>Aurora Agenda</small><h2>Mon agenda</h2></div></div>
+        <div class="tabs agenda-mode-tabs" id="agendaModes">
+          <button class="active" data-agenda-mode="day">Jour</button>
+          <button data-agenda-mode="week">Semaine</button>
+          <button data-agenda-mode="month">Mois</button>
+        </div>
         <div class="calendar" id="calendar"></div>
-        <div class="block-title"><h3 id="agendaDateTitle">Aujourd’hui</h3><button class="mini-primary" data-add="event">+ Rendez-vous</button></div>
+        <div class="block-title"><h3 id="agendaDateTitle">Aujourd’hui</h3><div class="agenda-actions"><button class="mini-primary" data-add="event">+ Rendez-vous</button><button class="secondary compact" data-add="task">+ Tâche</button></div></div>
+        <div id="agendaOverview" class="agenda-overview"></div>
         <div id="agendaList" class="timeline"></div>
       </section>
 
@@ -232,7 +251,7 @@
     </form>
   </dialog>
 
-  <div class="version">Aurora Alpha 0.4</div>
-  <script src="app.js?v=4"></script>
+  <div class="version">Aurora Alpha 0.5</div>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

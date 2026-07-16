@@ -1,4 +1,4 @@
-const STORAGE_KEY="aurora-alpha-04";
+const STORAGE_KEY="aurora-alpha-05";
 const todayISO=()=>new Date().toISOString().slice(0,10);
 const defaultState={
  dayType:"work",
@@ -42,7 +42,7 @@ const defaultState={
  ]
 };
 let state=loadState();
-let todayFilter="all",taskFilter="all",habitTab="today";
+let todayFilter="all",taskFilter="all",habitTab="today",agendaMode="day";
 const $=(s,e=document)=>e.querySelector(s), $$=(s,e=document)=>[...e.querySelectorAll(s)];
 function loadState(){try{return {...structuredClone(defaultState),...JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")}}catch{return structuredClone(defaultState)}}
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
@@ -119,6 +119,45 @@ function selectedEvents(){return state.events.filter(e=>e.date===state.selectedD
 function todayTasks(){return state.tasks.filter(t=>t.due<=todayISO())}
 function filterType(arr,filter){return filter==="all"?arr:arr.filter(x=>x.type===filter)}
 function empty(text){return `<article class="empty">${text}</article>`}
+
+function allAgendaItemsForDate(date){
+ const events=state.events.filter(e=>e.date===date).map(e=>({...e,itemKind:"event"}));
+ const tasks=state.tasks.filter(t=>t.due===date).map(t=>({...t,itemKind:"task",time:t.time||"À faire",detail:reportLabel(t.report)}));
+ return [...events,...tasks].sort((a,b)=>{
+  const ta=a.time==="À faire"?"99:99":a.time;
+  const tb=b.time==="À faire"?"99:99":b.time;
+  return ta.localeCompare(tb);
+ });
+}
+function smartPriority(){
+ const tasks=todayTasks().filter(t=>!t.done);
+ const urgent=tasks.find(t=>t.priority==="urgent");
+ const important=tasks.find(t=>t.priority==="important");
+ const nextEvent=state.events.filter(e=>e.date===todayISO() && e.time>=new Date().toTimeString().slice(0,5)).sort((a,b)=>a.time.localeCompare(b.time))[0];
+ if(urgent) return {title:"Commence par l’urgent",text:`« ${urgent.title} » est la priorité la plus forte aujourd’hui.`,action:"tasks"};
+ if(nextEvent) return {title:`Prochain rendez-vous à ${nextEvent.time}`,text:`Prépare « ${nextEvent.title} » avant de passer à autre chose.`,action:"agenda"};
+ if(important) return {title:"Une priorité importante t’attend",text:`Tu peux avancer maintenant sur « ${important.title} ».`,action:"tasks"};
+ if(tasks.length) return {title:"Une petite action suffit",text:`Commence par « ${tasks[0].title} » pour lancer ta dynamique.`,action:"tasks"};
+ return {title:"Tout est sous contrôle",text:"Tes priorités du jour sont terminées. Aurora te propose un moment pour toi ou Betty & Co.",action:"projects"};
+}
+function combinedDayProgress(){
+ const items=[...todayTasks(),...dayHabits()];
+ if(!items.length) return 0;
+ return Math.round(items.filter(x=>x.done).length/items.length*100);
+}
+function agendaTaskRow(t){
+ return `<article class="agenda-task-row ${t.done?"done":""}" data-task-id="${t.id}">
+ <span class="time">✓</span>
+ <button class="check">${t.done?"✓":""}</button>
+ <div class="main"><b>${t.title}</b><small>${typeLabels[t.type]} · ${t.priority} · ${reportLabel(t.report)}</small></div>
+ <span class="tag ${t.type}">Tâche</span></article>`;
+}
+function agendaEventRow(e){
+ return `<article class="event-row">
+ <span class="time">${e.time}</span>
+ <div class="main"><b>${e.title}</b><small>${e.detail||""}</small></div>
+ <span class="tag ${e.type}">${typeLabels[e.type]}</span></article>`;
+}
 function render(){
  setHeader();
  const todayEvents=state.events.filter(e=>e.date===todayISO()).sort((a,b)=>a.time.localeCompare(b.time));
@@ -134,6 +173,14 @@ function render(){
  $("#habitProgress").textContent=`${completedHabits}/${habits.length}`;
  $("#habitPercent").textContent=`${habits.length?Math.round(completedHabits/habits.length*100):0} % réalisée`;
  $("#budgetRemaining").textContent=`${Math.round(remaining)} €`;
+ const dayProgress=combinedDayProgress();
+ $("#homeProgressValue").textContent=dayProgress+"%";
+ $("#homeProgressBar").style.width=dayProgress+"%";
+ $("#homeProgressText").textContent=dayProgress<35?"Commence doucement : Aurora met en avant une seule priorité.":dayProgress<75?"Ta journée avance bien. Les cartes se réorganisent selon ce qu’il reste.":"Très belle progression. Aurora allège maintenant les rappels.";
+ const smart=smartPriority();
+ $("#smartSuggestionTitle").textContent=smart.title;
+ $("#smartSuggestionText").textContent=smart.text;
+ $("#smartSuggestionAction").dataset.smartNav=smart.action;
  const timeline=[...todayEvents.map(e=>({...e,kind:"event"})),...openTasks.slice(0,2).map(t=>({time:"À faire",title:t.title,type:t.type,detail:t.priority,kind:"task"}))];
  $("#homeTimeline").innerHTML=timeline.length?timeline.slice(0,4).map(x=>x.kind==="event"?eventRow(x):`<article class="event-row"><span class="time">✓</span><div class="main"><b>${x.title}</b><small>${x.detail}</small></div><span class="tag ${x.type}">${typeLabels[x.type]}</span></article>`).join(""):empty("Ta journée est libre pour le moment.");
  $("#homePriorities").innerHTML=openTasks.length?openTasks.slice(0,3).map(taskRow).join(""):empty("Toutes tes priorités sont terminées.");
@@ -152,9 +199,54 @@ function render(){
  bindDynamic();
 }
 function renderAgenda(){
- const events=selectedEvents().sort((a,b)=>a.time.localeCompare(b.time));
- $("#agendaDateTitle").textContent=state.selectedDate===todayISO()?"Aujourd’hui":new Date(state.selectedDate+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
- $("#agendaList").innerHTML=events.length?events.map(e=>`<div class="timeline-item"><b>${e.time}</b><article><strong>${e.title}</strong><p>${e.detail||""}</p><span class="tag ${e.type}">${typeLabels[e.type]}</span></article></div>`).join(""):empty("Aucun rendez-vous à cette date.");
+ const title=$("#agendaDateTitle");
+ if(agendaMode==="day"){
+  const items=allAgendaItemsForDate(state.selectedDate);
+  title.textContent=state.selectedDate===todayISO()?"Aujourd’hui":new Date(state.selectedDate+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+  $("#agendaOverview").innerHTML=`<article class="agenda-summary-card"><b>${items.filter(x=>x.itemKind==="event").length}</b><span>rendez-vous</span><b>${items.filter(x=>x.itemKind==="task").length}</b><span>tâches prévues</span></article>`;
+  $("#agendaList").innerHTML=items.length?items.map(item=>item.itemKind==="event"?agendaEventRow(item):agendaTaskRow(item)).join(""):empty("Aucun rendez-vous ni tâche à cette date.");
+ }
+ if(agendaMode==="week"){
+  const start=new Date(state.selectedDate+"T12:00:00");
+  const day=start.getDay()||7;
+  start.setDate(start.getDate()-day+1);
+  const days=[];
+  for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);days.push(d.toISOString().slice(0,10))}
+  title.textContent=`Semaine du ${formatDate(days[0])} au ${formatDate(days[6])}`;
+  $("#agendaOverview").innerHTML=`<div class="week-grid">${days.map(date=>{
+    const items=allAgendaItemsForDate(date);
+    return `<button class="week-day-card ${date===state.selectedDate?"active":""}" data-week-date="${date}">
+      <small>${new Date(date+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"short"})}</small>
+      <b>${new Date(date+"T12:00:00").getDate()}</b>
+      <span>${items.filter(x=>x.itemKind==="event").length} rdv</span>
+      <span>${items.filter(x=>x.itemKind==="task").length} tâches</span>
+    </button>`}).join("")}</div>`;
+  const weekItems=days.flatMap(date=>allAgendaItemsForDate(date).map(item=>({...item,agendaDate:date})));
+  $("#agendaList").innerHTML=weekItems.length?weekItems.map(item=>`<div class="week-item-group"><small>${formatDate(item.agendaDate)}</small>${item.itemKind==="event"?agendaEventRow(item):agendaTaskRow(item)}</div>`).join(""):empty("Aucun élément cette semaine.");
+ }
+ if(agendaMode==="month"){
+  const d=new Date(state.selectedDate+"T12:00:00"),year=d.getFullYear(),month=d.getMonth();
+  title.textContent=d.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+  const first=new Date(year,month,1),last=new Date(year,month+1,0);
+  const offset=(first.getDay()+6)%7;
+  const cells=[];
+  for(let i=0;i<offset;i++)cells.push(null);
+  for(let day=1;day<=last.getDate();day++){
+   const iso=new Date(year,month,day,12).toISOString().slice(0,10);
+   cells.push({day,iso,items:allAgendaItemsForDate(iso)});
+  }
+  $("#agendaOverview").innerHTML=`<div class="month-grid">
+    ${["L","M","M","J","V","S","D"].map(x=>`<span class="month-head">${x}</span>`).join("")}
+    ${cells.map(c=>c?`<button class="month-cell ${c.iso===state.selectedDate?"active":""}" data-month-date="${c.iso}">
+      <b>${c.day}</b>
+      <i class="dot event-dot" style="opacity:${c.items.some(x=>x.itemKind==="event")?1:0}"></i>
+      <i class="dot task-dot" style="opacity:${c.items.some(x=>x.itemKind==="task")?1:0}"></i>
+    </button>`:`<span></span>`).join("")}
+  </div>`;
+  const items=allAgendaItemsForDate(state.selectedDate);
+  $("#agendaList").innerHTML=items.length?items.map(item=>item.itemKind==="event"?agendaEventRow(item):agendaTaskRow(item)).join(""):empty("Sélectionne un jour pour voir ses rendez-vous et ses tâches.");
+ }
+ bindAgendaModeItems();
 }
 function renderHabits(){
  const root=$("#habitContent"),habits=dayHabits(),done=habits.filter(h=>h.done).length,pct=habits.length?Math.round(done/habits.length*100):0;
@@ -176,6 +268,11 @@ function renderNotifications(){
 }
 function updateScore(){
  const items=[...todayTasks(),...dayHabits()],done=items.filter(x=>x.done).length,pct=items.length?Math.round(done/items.length*100):0;$("#scoreValue").textContent=pct+"%";$("#scoreBar").style.width=pct+"%";$("#scoreMessage").textContent=pct<40?"Commence par une petite action simple.":pct<80?"Ta journée avance bien. Continue à ton rythme.":"Très belle progression aujourd’hui.";
+}
+function bindAgendaModeItems(){
+ $$("[data-week-date]").forEach(b=>b.onclick=()=>{state.selectedDate=b.dataset.weekDate;save();renderAgenda()});
+ $$("[data-month-date]").forEach(b=>b.onclick=()=>{state.selectedDate=b.dataset.monthDate;save();renderAgenda()});
+ $$(".agenda-task-row .check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest(".agenda-task-row").dataset.taskId));t.done=!t.done;save();render();flashSuccess(t.done?"Tâche terminée depuis l’agenda ✨":"Tâche réactivée")});
 }
 function bindDynamic(){
  $$(".task-row .check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest(".task-row").dataset.taskId));t.done=!t.done;save();render();flashSuccess(t.done?"Tâche terminée ✨":"Tâche réactivée")});
@@ -208,11 +305,17 @@ function setActiveTab(selector,attr,value){$$(selector+" button").forEach(b=>b.c
 $$("[data-filter]").forEach(b=>b.onclick=()=>{todayFilter=b.dataset.filter;setActiveTab("#todayFilters","data-filter",todayFilter);render()});
 $$("[data-task-filter]").forEach(b=>b.onclick=()=>{taskFilter=b.dataset.taskFilter;setActiveTab("#taskFilters","data-task-filter",taskFilter);render()});
 $$("[data-habit-tab]").forEach(b=>b.onclick=()=>{habitTab=b.dataset.habitTab;setActiveTab("#habitTabs","data-habit-tab",habitTab);render()});
+$$("[data-agenda-mode]").forEach(b=>b.onclick=()=>{
+ agendaMode=b.dataset.agendaMode;
+ setActiveTab("#agendaModes","data-agenda-mode",agendaMode);
+ renderAgenda();
+});
+$("#smartSuggestionAction").onclick=()=>go($("#smartSuggestionAction").dataset.smartNav||"tasks");
 const dialog=$("#formDialog"),fields=$("#formFields"),title=$("#formTitle");
 function openForm(kind){
  $("#addSheet").classList.remove("open");
  if(kind==="event"){title.textContent="Ajouter un rendez-vous";fields.innerHTML=`<input type="hidden" name="kind" value="event"><label>Titre<input name="title" required></label><label>Date<input name="date" type="date" value="${state.selectedDate}" required></label><label>Heure<input name="time" type="time" value="10:00" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Professionnel</option><option value="business">Betty & Co</option></select></label><label>Lieu / détail<input name="detail"></label>`}
- if(kind==="task"){title.textContent="Ajouter une tâche";fields.innerHTML=`<input type="hidden" name="kind" value="task"><label>Tâche<input name="title" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Professionnel</option><option value="business">Betty & Co</option></select></label><label>Échéance<input name="due" type="date" value="${todayISO()}" required></label><label>Priorité<select name="priority"><option value="normal">Normale</option><option value="important">Importante</option><option value="urgent">Urgente</option></select></label><label>Report automatique<select name="report">
+ if(kind==="task"){title.textContent="Ajouter une tâche";fields.innerHTML=`<input type="hidden" name="kind" value="task"><label>Tâche<input name="title" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Professionnel</option><option value="business">Betty & Co</option></select></label><label>Échéance<input name="due" type="date" value="${todayISO()}" required></label><label>Heure (facultatif)<input name="time" type="time"></label><label>Priorité<select name="priority"><option value="normal">Normale</option><option value="important">Importante</option><option value="urgent">Urgente</option></select></label><label>Report automatique<select name="report">
 <option value="tomorrow">Au lendemain</option>
 <option value="next-workday">Au prochain jour travaillé</option>
 <option value="next-free-day">Au prochain jour libre</option>
@@ -226,7 +329,7 @@ function openForm(kind){
 $$("[data-add]").forEach(b=>b.onclick=()=>openForm(b.dataset.add));$("#closeDialog").onclick=()=>dialog.close();
 $("#dynamicForm").onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),kind=f.get("kind");
  if(kind==="event")state.events.push({id:Date.now(),date:f.get("date"),time:f.get("time"),title:f.get("title"),type:f.get("type"),detail:f.get("detail")});
- if(kind==="task")state.tasks.push({id:Date.now(),title:f.get("title"),type:f.get("type"),priority:f.get("priority"),due:f.get("due"),report:f.get("report"),done:false});
+ if(kind==="task")state.tasks.push({id:Date.now(),title:f.get("title"),type:f.get("type"),priority:f.get("priority"),due:f.get("due"),time:f.get("time")||"",report:f.get("report"),done:false});
  if(kind==="expense")state.expenses.unshift({id:Date.now(),date:todayISO(),title:f.get("title"),amount:Number(f.get("amount")),cat:f.get("cat")});
  if(kind==="projectTask")state.projectTasks.push({id:Date.now(),title:f.get("title"),done:false});
  save();dialog.close();render();

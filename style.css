@@ -213,3 +213,209 @@ body{
   .decor-three{left:-170px}
   .aurora-toast{max-width:90%;white-space:normal;text-align:center}
 }
+
+/* Aurora Alpha 0.5 — écriture aérée, agenda complet et fonds illustrés */
+:root{
+  --script-font:"Snell Roundhand","Segoe Script","Brush Script MT",cursive;
+}
+body{
+  letter-spacing:.012em;
+}
+.topbar h1,.page-head h2,.hero h2,.message-card blockquote,.block h3,.drawer-head h3,.project-hero h3,.coach-dark h3{
+  font-weight:500;
+  letter-spacing:.018em;
+  line-height:1.24;
+}
+.hero h2,.topbar h1,.page-head h2{
+  font-family:var(--script-font);
+  font-size:clamp(31px,5vw,43px);
+}
+.hero p,.message-card blockquote,.main small,.adaptive-card p,.coach-card p,.journal label,.info-banner{
+  line-height:1.7;
+}
+.block{
+  margin:29px 0;
+}
+.event-row,.task-row,.habit-row,.expense-row,.project-task,.notification,.routine-card{
+  padding:17px 16px;
+  min-height:68px;
+}
+.summary-grid button{
+  padding:19px 17px;
+  min-height:112px;
+}
+.message-card{
+  padding:27px 24px;
+}
+.message-card blockquote{
+  font-size:23px;
+}
+.line-art{
+  position:fixed;
+  z-index:0;
+  width:330px;
+  height:520px;
+  pointer-events:none;
+  opacity:.28;
+  background:
+    radial-gradient(ellipse at 50% 20%,transparent 0 27%,rgba(105,67,44,.35) 27.5% 28%,transparent 28.5%),
+    radial-gradient(ellipse at 35% 43%,transparent 0 19%,rgba(197,143,40,.42) 19.5% 20%,transparent 20.5%),
+    repeating-radial-gradient(ellipse at 50% 50%,transparent 0 23px,rgba(105,67,44,.18) 24px 25px,transparent 26px 45px);
+  border-radius:45% 55% 52% 48%;
+  filter:blur(.1px);
+}
+.line-art-left{left:-190px;top:210px;transform:rotate(-14deg)}
+.line-art-right{right:-200px;bottom:80px;transform:rotate(19deg)}
+.decor{opacity:.34}
+.decor-one{right:-120px;top:80px}
+.decor-two{left:-135px;bottom:-80px}
+.decor-three{left:-70px;top:46%;opacity:.32}
+.hero:before,.score-card:before,.project-hero:before,.journal:before{
+  content:"";
+  position:absolute;
+  width:155px;height:155px;
+  right:-48px;bottom:-48px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,transparent 0 18%,rgba(197,143,40,.22) 19% 20%,transparent 21% 34%,rgba(104,70,49,.18) 35% 36%,transparent 37%),
+    repeating-conic-gradient(rgba(104,70,49,.16) 0 1deg,transparent 1deg 18deg);
+  opacity:.75;
+}
+.score-card,.project-hero,.journal{position:relative;overflow:hidden}
+.agenda-actions{display:flex;gap:8px}
+.compact{padding:9px 12px}
+.agenda-overview{margin:14px 0 17px}
+.agenda-summary-card{
+  display:grid;
+  grid-template-columns:auto 1fr auto 1fr;
+  gap:7px 10px;
+  align-items:center;
+  background:linear-gradient(145deg,rgba(255,249,241,.95),rgba(221,197,170,.72));
+  border:1px solid rgba(104,70,49,.16);
+  border-radius:19px;
+  padding:15px 17px;
+}
+.agenda-summary-card b{font-size:24px;color:var(--gold)}
+.agenda-summary-card span{color:var(--muted);font-size:12px}
+.agenda-task-row{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  background:rgba(255,250,244,.84);
+  border:1px solid rgba(104,70,49,.13);
+  border-radius:18px;
+  padding:15px;
+  transition:.22s ease;
+}
+.agenda-task-row:hover{transform:translateY(-2px);box-shadow:0 13px 32px rgba(68,40,24,.12)}
+.agenda-task-row.done{opacity:.55}
+.week-grid{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(76px,1fr));
+  gap:8px;
+  overflow:auto;
+  padding-bottom:5px;
+}
+.week-day-card{
+  border:1px solid rgba(104,70,49,.14);
+  background:rgba(255,249,241,.84);
+  border-radius:17px;
+  padding:12px 8px;
+  color:var(--brown);
+  text-align:center;
+}
+.week-day-card small,.week-day-card b,.week-day-card span{display:block}
+.week-day-card b{font-size:21px;margin:4px 0 7px}
+.week-day-card span{font-size:10px;color:var(--muted);margin-top:3px}
+.week-day-card.active{
+  background:linear-gradient(145deg,#6d4934,#422b20);
+  color:#ffe9b6;
+}
+.week-day-card.active span{color:#efdcb8}
+.week-item-group{
+  display:grid;
+  grid-template-columns:68px 1fr;
+  gap:8px;
+  align-items:start;
+}
+.week-item-group>small{
+  padding-top:18px;
+  color:var(--gold);
+  font-weight:700;
+}
+.month-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:7px;
+  background:rgba(255,249,241,.76);
+  border:1px solid rgba(104,70,49,.12);
+  border-radius:21px;
+  padding:13px;
+}
+.month-head{
+  text-align:center;
+  color:var(--gold);
+  font-size:11px;
+  font-weight:800;
+}
+.month-cell{
+  min-height:51px;
+  border:0;
+  border-radius:14px;
+  background:rgba(236,218,198,.52);
+  color:var(--brown);
+  position:relative;
+}
+.month-cell.active{
+  background:linear-gradient(145deg,#6d4934,#422b20);
+  color:#fff1cb;
+}
+.month-cell .dot{
+  position:absolute;
+  bottom:7px;
+  width:6px;height:6px;border-radius:50%;
+}
+.event-dot{left:calc(50% - 8px);background:#c98a8e}
+.task-dot{left:calc(50% + 2px);background:var(--gold)}
+.aurora-intelligence-card,.daily-evolution-card{
+  border-radius:22px;
+  padding:21px;
+  margin-bottom:17px;
+  border:1px solid rgba(197,143,40,.30);
+  background:
+    linear-gradient(145deg,rgba(255,249,241,.96),rgba(220,193,163,.83));
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+.aurora-intelligence-card:after,.daily-evolution-card:after{
+  content:"✦";
+  position:absolute;
+  right:16px;
+  top:3px;
+  font-size:68px;
+  color:rgba(104,70,49,.10);
+}
+.aurora-intelligence-card span,.daily-evolution-card span{
+  color:var(--gold);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.15em;
+  font-weight:800;
+}
+.aurora-intelligence-card h3{
+  font-family:var(--script-font);
+  font-weight:500;
+  font-size:27px;
+  margin:9px 0 7px;
+}
+.aurora-intelligence-card p,.daily-evolution-card p{line-height:1.65;color:var(--muted)}
+.daily-evolution-card>div:first-child{display:flex;justify-content:space-between;align-items:center}
+.daily-evolution-card strong{font-family:var(--script-font);font-size:31px;color:var(--brown)}
+@media(max-width:560px){
+  .hero h2,.topbar h1,.page-head h2{font-size:34px}
+  .week-grid{grid-template-columns:repeat(7,72px)}
+  .agenda-actions{flex-direction:column}
+  .agenda-summary-card{grid-template-columns:auto 1fr}
+  .line-art{opacity:.20}
+}
