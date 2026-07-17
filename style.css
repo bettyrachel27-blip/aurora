@@ -561,3 +561,153 @@ body:after{opacity:.13!important}
   .portrait-illustration{height:340px!important}.portrait-copy h1{font-size:38px!important}.soft-quote{font-size:16px!important}.aurora-message p{max-width:82%!important}
   .summary-card,.priority-card,.smart-card{padding:21px!important}.summary-card>div>span,.priority-card>span,.smart-card>span{font-size:23px!important}
 }
+
+/* ===== Aurora 1.3 — Étape 5 : correction réelle du design ===== */
+:root{
+  --ui-ivory:#fffaf3;
+  --ui-cream:#f7ede1;
+  --ui-chocolate:#3f281e;
+  --ui-brown:#694532;
+  --ui-gold:#c9953f;
+  --ui-line:rgba(111,72,44,.16);
+  --ui-shadow:0 20px 55px rgba(62,37,23,.12);
+  --ui-serif:"Cormorant Garamond",Georgia,serif;
+  --ui-body:"Manrope","Segoe UI",sans-serif;
+}
+html,body{font-family:var(--ui-body)!important;color:var(--ui-chocolate)!important}
+button,input,textarea,select{font-family:var(--ui-body)!important}
+
+/* Suppression des transparences et des anciens visuels parasites */
+.summary-card,.priority-card,.smart-card,.paper-card,.budget-hero,.journal-card,.business-hero,.stats-chart-card,.agenda-tasks-card,.task-summary,.routine-mode,.portrait-panel,.home-shortcuts button{
+  background:var(--ui-ivory)!important;
+  opacity:1!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Accueil desktop : composition nette et sans chevauchement */
+.home-layout{align-items:start!important}
+.portrait-panel{
+  min-height:760px!important;
+  grid-template-columns:310px minmax(0,1fr)!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+}
+.portrait-panel:before{
+  background:url("assets/lily-elegant.svg") right -120px top -105px/430px auto no-repeat!important;
+  opacity:.055!important;
+}
+.portrait-panel:after{
+  background:linear-gradient(90deg,transparent 0 31%,rgba(255,250,243,.80) 42%,var(--ui-ivory) 54%)!important;
+  z-index:1!important;
+}
+.portrait-illustration{
+  height:760px!important;
+  min-height:760px!important;
+  background:#f7e9dc!important;
+  overflow:hidden!important;
+  z-index:0!important;
+}
+.portrait-illustration img{
+  content:url("assets/aurora-woman-clean.webp")!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:47% 0%!important;
+  filter:sepia(.08) saturate(.86) contrast(1.01)!important;
+}
+.portrait-copy{
+  z-index:3!important;
+  padding:46px 42px 34px 28px!important;
+  min-width:0!important;
+}
+.date-eyebrow{font-family:var(--ui-body)!important;font-size:11px!important;letter-spacing:.16em!important}
+.portrait-copy h1{
+  font-family:var(--ui-serif)!important;
+  font-size:54px!important;
+  font-weight:600!important;
+  line-height:.98!important;
+  letter-spacing:-.02em!important;
+}
+.soft-quote{font-family:var(--ui-serif)!important;font-size:20px!important;line-height:1.55!important;font-style:normal!important}
+
+/* Cartes raccourcis plus sobres */
+.home-shortcuts button{box-shadow:0 9px 24px rgba(62,37,23,.07)!important}
+.home-shortcuts b{font-family:var(--ui-serif)!important;font-size:20px!important;font-weight:600!important}
+.home-shortcuts small{font-family:var(--ui-body)!important}
+
+/* Message Aurora : aucune image ou écriture étrangère derrière */
+.aurora-message{
+  margin-top:auto!important;
+  min-height:190px!important;
+  background:
+    url("assets/lotus-gold.svg") right -20px bottom -28px/210px auto no-repeat,
+    linear-gradient(140deg,#4a3024 0%,#2d1c15 100%)!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+}
+.aurora-message:before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  background:radial-gradient(circle at 82% 18%,rgba(225,188,111,.12),transparent 32%)!important;
+  opacity:1!important;
+  z-index:0!important;
+}
+.aurora-message>*{position:relative!important;z-index:1!important}
+.aurora-message>span{
+  font-family:var(--ui-serif)!important;
+  font-style:italic!important;
+  font-size:27px!important;
+  font-weight:500!important;
+}
+.aurora-message p{font-family:var(--ui-body)!important;font-size:16px!important;max-width:66%!important;margin-bottom:0!important}
+
+/* Typographie raffinée et cohérente */
+.summary-card>div>span,.priority-card>span,.smart-card>span,.budget-hero>span,.business-hero>span,.page-heading h2,.section-title h3,.priority-card h3,.smart-card h3{
+  font-family:var(--ui-serif)!important;
+}
+.summary-card>div>span,.priority-card>span,.smart-card>span{
+  font-size:30px!important;
+  font-style:italic!important;
+  font-weight:500!important;
+  letter-spacing:-.01em!important;
+}
+.priority-card h3,.smart-card h3{font-size:31px!important;line-height:1.12!important}
+.summary-card li b{font-family:var(--ui-serif)!important;font-size:18px!important}
+
+/* Décor : visible autour des cartes, jamais à travers */
+body:before{
+  background:
+    url("assets/lily-elegant.svg") left -155px top 15px/500px auto no-repeat,
+    url("assets/lily-elegant.svg") right -175px bottom -80px/590px auto no-repeat,
+    url("assets/lotus-gold.svg") 74% 9%/220px auto no-repeat!important;
+  opacity:.14!important;
+}
+.summary-card:before,.priority-card:before,.smart-card:before{pointer-events:none!important}
+
+/* Navigation basse uniquement tablette/téléphone */
+@media(min-width:1000px){.bottom-nav{display:none!important}}
+
+/* Adaptation écran moyen */
+@media(max-width:1179px){
+  .portrait-panel{grid-template-columns:285px minmax(0,1fr)!important}
+  .portrait-illustration{height:720px!important;min-height:720px!important}
+  .portrait-panel{min-height:720px!important}
+  .portrait-copy h1{font-size:49px!important}
+}
+@media(max-width:850px){
+  .portrait-panel{grid-template-columns:1fr!important;min-height:auto!important}
+  .portrait-illustration{height:430px!important;min-height:430px!important}
+  .portrait-illustration img{object-position:center 11%!important}
+  .portrait-panel:after{background:linear-gradient(0deg,var(--ui-ivory) 0%,rgba(255,250,243,.97) 27%,transparent 60%)!important}
+  .portrait-copy{padding:28px 23px 25px!important}
+  .aurora-message p{max-width:78%!important}
+}
+@media(max-width:520px){
+  .portrait-illustration{height:345px!important;min-height:345px!important}
+  .portrait-copy h1{font-size:42px!important}
+  .summary-card>div>span,.priority-card>span,.smart-card>span{font-size:25px!important}
+  .aurora-message>span{font-size:23px!important}
+  .aurora-message p{max-width:84%!important;font-size:15px!important}
+}
