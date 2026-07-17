@@ -711,3 +711,77 @@ body:before{
   .aurora-message>span{font-size:23px!important}
   .aurora-message p{max-width:84%!important;font-size:15px!important}
 }
+
+/* ===== Aurora 1.3 — Étape 6 : message d’Aurora opaque + vraie nouvelle typographie ===== */
+:root{
+  --aurora-heading:"Playfair Display","Palatino Linotype",Palatino,Georgia,serif;
+  --aurora-script:"Allura","Segoe Script","Brush Script MT",cursive;
+  --aurora-text:"Manrope","Aptos","Segoe UI",Arial,sans-serif;
+}
+html,body,button,input,textarea,select{font-family:var(--aurora-text)!important}
+.portrait-copy h1,
+.summary-card>div>span,
+.priority-card>span,
+.smart-card>span,
+.priority-card h3,
+.smart-card h3,
+.home-shortcuts b,
+.summary-card li b,
+.page-heading h2{
+  font-family:var(--aurora-heading)!important;
+}
+.portrait-copy h1{font-weight:600!important;letter-spacing:-.025em!important}
+.summary-card>div>span,.priority-card>span,.smart-card>span{
+  font-style:normal!important;
+  font-weight:600!important;
+}
+
+/* Carte Message d’Aurora : fond 100 % opaque, aucun ancien visuel en transparence */
+.aurora-message{
+  position:relative!important;
+  isolation:isolate!important;
+  opacity:1!important;
+  background:#3b241a!important;
+  background-image:none!important;
+  border:1px solid #c79545!important;
+  box-shadow:0 20px 45px rgba(48,27,17,.30)!important;
+  min-height:205px!important;
+  padding:24px 26px!important;
+  color:#fff8ed!important;
+}
+.aurora-message:before,
+.aurora-message:after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  opacity:0!important;
+}
+.aurora-message .message-mandala{display:none!important;background:none!important;opacity:0!important}
+.aurora-message>span{
+  display:block!important;
+  font-family:var(--aurora-script)!important;
+  font-style:normal!important;
+  font-size:34px!important;
+  line-height:1.05!important;
+  font-weight:400!important;
+  letter-spacing:.01em!important;
+  color:#e8c270!important;
+  margin-bottom:18px!important;
+}
+.aurora-message p{
+  font-family:var(--aurora-heading)!important;
+  font-size:18px!important;
+  line-height:1.48!important;
+  font-weight:500!important;
+  letter-spacing:.005em!important;
+  color:#fffaf2!important;
+  max-width:100%!important;
+  margin:0!important;
+  text-shadow:none!important;
+}
+
+@media(max-width:520px){
+  .aurora-message{min-height:180px!important;padding:21px!important}
+  .aurora-message>span{font-size:29px!important}
+  .aurora-message p{font-size:16px!important;max-width:100%!important}
+}

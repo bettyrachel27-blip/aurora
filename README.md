@@ -1,5 +1,6 @@
-# Aurora 1.3 — Étape 3
+Aurora 1.3 — Étape 6
 
-Refonte visuelle fidèle à la maquette validée : cartes opaques, palette ivoire/chocolat/or, fleurs fines de style botanique, lotus et meilleure hiérarchie visuelle.
-
-Fonctionnalités des étapes précédentes conservées.
+- Carte « Message d’Aurora » rendue totalement opaque.
+- Suppression des visuels fantômes et du mandala en transparence dans cette carte.
+- Nouvelle typographie : Allura pour le titre du message, Playfair Display pour les titres et Manrope pour le texte.
+- Cache PWA renouvelé (version 136).
