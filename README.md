@@ -1,20 +1,14 @@
-# Aurora Alpha 1.1 — correction visuelle
+# Aurora 1.2
 
-Cette version corrige la principale différence avec la maquette :
+Version premium de l’application Aurora.
 
-- remplacement du personnage en dessin filaire par une illustration féminine détaillée ;
-- ajout d’un véritable fond floral issu du style validé ;
-- mandalas plus visibles ;
-- panneaux chocolat texturés ;
-- cartes crème et dorées plus riches ;
-- contrastes et profondeur renforcés ;
-- adaptation mobile conservée ;
-- toutes les fonctions de la version 1.0 restent présentes.
+## Nouveautés
+- Cartes ivoire opaques pour une meilleure lisibilité
+- Fond décoratif atténué avec lotus, mandalas et arbre de vie
+- Refonte visuelle crème, chocolat et or
+- Modes Vacances et Repos santé masquant les éléments professionnels
+- Agenda avec véritables vues Jour, Semaine (7 jours) et Mois
+- Rendez-vous et tâches réunis dans la vue semaine
+- Mise en page responsive mobile et ordinateur
 
-## Mise en ligne
-1. Décompresser le ZIP.
-2. Copier tout dans `Documents/GitHub/aurora`.
-3. Remplacer les fichiers existants.
-4. GitHub Desktop : `Aurora Alpha 1.1 visuel`.
-5. Commit to main puis Push origin.
-6. Render : Deploy latest commit ou Clear build cache & deploy.
+Déploiement : remplacer les fichiers du dépôt Aurora par le contenu de ce dossier, puis pousser le commit vers GitHub.

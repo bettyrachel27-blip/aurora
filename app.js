@@ -1,4 +1,4 @@
-const KEY="aurora-alpha-10";
+const KEY="aurora-alpha-12";
 const isoToday=()=>new Date().toISOString().slice(0,10);
 const base={
   dayMode:"work",selectedDate:isoToday(),income:2300,savings:100,water:1.2,steps:2845,
@@ -57,14 +57,17 @@ function nextFreeDay(iso){let d=iso;do{d=addDays(d,1)}while(![0,6].includes(new 
 function applyReports(){let changed=false;const today=isoToday();state.tasks.forEach(t=>{if(t.done||t.due>=today)return;if(t.report==="tomorrow"||t.report==="until-done"){t.due=today;changed=true}else if(t.report==="next-workday"){while(t.due<today)t.due=nextWorkday(t.due);changed=true}else if(t.report==="next-free-day"){while(t.due<today)t.due=nextFreeDay(t.due);changed=true}});if(changed)save()}
 applyReports();
 function visibleHabits(){return state.habits.filter(h=>h.modes.includes(state.dayMode))}
-function todayTasks(){return state.tasks.filter(t=>t.due<=isoToday())}
+function modeAllows(type){return !(state.dayMode==="vacation"||state.dayMode==="sick")||type!=="work"}
+function visibleEvents(){return state.events.filter(e=>modeAllows(e.type))}
+function visibleTasks(){return state.tasks.filter(t=>modeAllows(t.type))}
+function todayTasks(){return visibleTasks().filter(t=>t.due<=isoToday())}
 function progress(){const list=[...todayTasks(),...visibleHabits()];return list.length?Math.round(list.filter(x=>x.done).length/list.length*100):0}
 function remaining(){return state.income-state.savings-state.expenses.reduce((s,e)=>s+Number(e.amount),0)}
 function topPriority(){const open=todayTasks().filter(t=>!t.done);return open.find(t=>t.priority==="important")||open.find(t=>t.priority==="normal")||open[0]}
-function smart(){const p=topPriority();const upcoming=state.events.filter(e=>e.date===isoToday()&&e.time>=new Date().toTimeString().slice(0,5)).sort((a,b)=>a.time.localeCompare(b.time))[0];if(p)return{title:"Commence par ta priorité",text:`« ${p.title} » est la meilleure action à faire maintenant.`,go:"tasks"};if(upcoming)return{title:`Prochain rendez-vous à ${upcoming.time}`,text:`Prépare « ${upcoming.title} » tranquillement.`,go:"agenda"};return{title:"Tout est sous contrôle",text:"Tu peux avancer 15 minutes sur Betty & Co ou prendre du temps pour toi.",go:"projects"}}
+function smart(){const p=topPriority();const upcoming=visibleEvents().filter(e=>e.date===isoToday()&&e.time>=new Date().toTimeString().slice(0,5)).sort((a,b)=>a.time.localeCompare(b.time))[0];if(p)return{title:"Commence par ta priorité",text:`« ${p.title} » est la meilleure action à faire maintenant.`,go:"tasks"};if(upcoming)return{title:`Prochain rendez-vous à ${upcoming.time}`,text:`Prépare « ${upcoming.title} » tranquillement.`,go:"agenda"};return{title:"Tout est sous contrôle",text:"Tu peux avancer 15 minutes sur Betty & Co ou prendre du temps pour toi.",go:"projects"}}
 function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1600)}
 function render(){
- const d=new Date(),h=d.getHours(),p=progress(),eventsToday=state.events.filter(e=>e.date===isoToday()),open=todayTasks().filter(t=>!t.done),habits=visibleHabits(),left=remaining(),prio=topPriority(),tip=smart();
+ const d=new Date(),h=d.getHours(),p=progress(),eventsToday=visibleEvents().filter(e=>e.date===isoToday()),open=todayTasks().filter(t=>!t.done),habits=visibleHabits(),left=remaining(),prio=topPriority(),tip=smart();
  $("#homeDate").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
  $("#helloTitle").textContent=h<12?"Bonjour Betty":h<18?"Bel après-midi Betty":"Bonsoir Betty";
  $("#homeTime").textContent="Il est "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
@@ -84,13 +87,28 @@ function eventMarkup(e){return `<div class="agenda-event"><time>${e.time}</time>
 function taskMarkup(t){return `<div class="row ${t.done?"done":""}" data-task="${t.id}"><button class="circle-check">${t.done?"✓":""}</button><div class="row-main"><b>${t.title}</b><small>${typeLabel[t.type]} · ${t.priority} · ${t.time||fmt(t.due,{day:"numeric",month:"short"})}</small></div><span class="category ${t.type}">${typeLabel[t.type]}</span></div>`}
 function habitMarkup(h){return `<div class="row ${h.done?"done":""}" data-habit="${h.id}"><button class="circle-check">${h.done?"✓":""}</button><div class="row-main"><b>${h.title}</b><small>${h.group}</small></div></div>`}
 function renderAgenda(){
- $("#agendaTitle").textContent=agendaMode==="day"?fmt(state.selectedDate,{weekday:"long",day:"numeric",month:"long",year:"numeric"}):agendaMode==="week"?"Semaine autour du "+fmt(state.selectedDate,{day:"numeric",month:"long"}):fmt(state.selectedDate,{month:"long",year:"numeric"});
- const strip=$("#agendaStrip");strip.innerHTML="";
- for(let i=-3;i<=6;i++){const iso=addDays(state.selectedDate,i),b=document.createElement("button");b.className=iso===state.selectedDate?"active":"";const dd=new Date(iso+"T12:00:00");b.innerHTML=`<small>${dd.toLocaleDateString("fr-FR",{weekday:"short"})}</small><b>${dd.getDate()}</b>`;b.onclick=()=>{state.selectedDate=iso;save();renderAgenda()};strip.appendChild(b)}
- let dates=[state.selectedDate];if(agendaMode==="week")dates=[-3,-2,-1,0,1,2,3].map(n=>addDays(state.selectedDate,n));if(agendaMode==="month"){const d=new Date(state.selectedDate+"T12:00:00");dates=Array.from({length:new Date(d.getFullYear(),d.getMonth()+1,0).getDate()},(_,i)=>new Date(d.getFullYear(),d.getMonth(),i+1,12).toISOString().slice(0,10))}
- const events=dates.flatMap(date=>state.events.filter(e=>e.date===date).map(e=>({...e,date}))).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
- $("#agendaTimeline").innerHTML=events.length?events.map(eventMarkup).join(""):`<div class="row"><div class="row-main"><b>Aucun rendez-vous</b><small>Ajoute un rendez-vous avec le bouton +</small></div></div>`;
- const dayTasks=state.tasks.filter(t=>dates.includes(t.due));$("#agendaTaskCount").textContent=dayTasks.length;$("#agendaTasks").innerHTML=dayTasks.length?dayTasks.map(taskMarkup).join(""):`<div class="row"><div class="row-main"><b>Aucune tâche prévue</b></div></div>`;bindRows();
+ const root=$("#agendaTimeline"), strip=$("#agendaStrip");
+ const selected=new Date(state.selectedDate+"T12:00:00");
+ $("#agendaTitle").textContent=agendaMode==="day"?fmt(state.selectedDate,{weekday:"long",day:"numeric",month:"long",year:"numeric"}):agendaMode==="week"?"Semaine du "+fmt(addDays(state.selectedDate,-((selected.getDay()+6)%7)),{day:"numeric",month:"long"}):fmt(state.selectedDate,{month:"long",year:"numeric"});
+ const monday=addDays(state.selectedDate,-((selected.getDay()+6)%7));
+ const weekDates=Array.from({length:7},(_,i)=>addDays(monday,i));
+ strip.innerHTML=weekDates.map(d=>`<button class="${d===state.selectedDate?"active":""}" data-pick-date="${d}"><small>${fmt(d,{weekday:"short"})}</small><b>${fmt(d,{day:"numeric"})}</b></button>`).join("");
+ $$('[data-pick-date]').forEach(b=>b.onclick=()=>{state.selectedDate=b.dataset.pickDate;save();renderAgenda()});
+ const events=visibleEvents(),tasks=visibleTasks();
+ if(agendaMode==="day"){
+   const dayEvents=events.filter(e=>e.date===state.selectedDate).sort((a,b)=>a.time.localeCompare(b.time));
+   root.className="agenda-timeline";
+   root.innerHTML=dayEvents.length?dayEvents.map(eventMarkup).join(""):`<div class="paper-card"><p>Aucun rendez-vous aujourd’hui. Ta journée respire ✨</p></div>`;
+ }else if(agendaMode==="week"){
+   root.className="week-board";
+   root.innerHTML=weekDates.map(d=>{const de=events.filter(e=>e.date===d).sort((a,b)=>a.time.localeCompare(b.time));const dt=tasks.filter(t=>t.due===d&&!t.done);return `<section class="week-day ${d===isoToday()?"today":""}"><div class="week-day-head"><b>${fmt(d,{weekday:"long"})}</b><small>${fmt(d,{day:"numeric",month:"short"})}</small></div>${de.map(e=>`<span class="week-item ${e.type}"><b>${e.time}</b> ${e.title}</span>`).join("")}${dt.map(t=>`<span class="week-item task ${t.type}">✓ ${t.title}</span>`).join("")}${!de.length&&!dt.length?'<small style="opacity:.55">Journée libre</small>':''}</section>`}).join("");
+ }else{
+   const y=selected.getFullYear(),m=selected.getMonth(),days=new Date(y,m+1,0).getDate(),first=(new Date(y,m,1).getDay()+6)%7;
+   root.className="month-board";
+   root.innerHTML=Array.from({length:first},()=>'<div></div>').join('')+Array.from({length:days},(_,i)=>{const d=new Date(y,m,i+1,12).toISOString().slice(0,10),count=events.filter(e=>e.date===d).length+tasks.filter(t=>t.due===d&&!t.done).length;return `<button class="month-cell" data-month-date="${d}"><b>${i+1}</b>${Array.from({length:Math.min(count,4)},()=>'<i class="month-dot"></i>').join('')}</button>`}).join('');
+   $$('[data-month-date]').forEach(b=>b.onclick=()=>{state.selectedDate=b.dataset.monthDate;agendaMode='day';$$('[data-agenda]').forEach(x=>x.classList.toggle('active',x.dataset.agenda==='day'));save();renderAgenda()});
+ }
+ const dayTasks=tasks.filter(t=>t.due===state.selectedDate&&!t.done);$("#agendaTaskCount").textContent=dayTasks.length;$("#agendaTasks").innerHTML=dayTasks.length?dayTasks.map(taskMarkup).join(""):'<div class="row"><div class="row-main"><b>Aucune tâche prévue</b><small>Profite de cet espace.</small></div></div>';bindRows()
 }
 function renderTasks(){const list=taskTab==="all"?state.tasks:state.tasks.filter(t=>t.type===taskTab);$("#taskOpenCount").textContent=list.filter(t=>!t.done).length;$("#taskRows").innerHTML=list.sort((a,b)=>Number(a.done)-Number(b.done)).map(taskMarkup).join("");bindRows()}
 function renderRoutines(){const root=$("#routineContent"),items=visibleHabits();$("#routineModeLabel").textContent=dayLabel[state.dayMode];if(routineTab==="today"){const groups=[...new Set(items.map(x=>x.group))];root.innerHTML=groups.map(g=>`<div class="paper-card"><div class="section-title"><h3>${g}</h3></div>${items.filter(x=>x.group===g).map(habitMarkup).join("")}</div>`).join("")}else if(routineTab==="stats"){const done=items.filter(x=>x.done).length,p=items.length?Math.round(done/items.length*100):0;root.innerHTML=`<div class="summary-card"><div><span>Régularité</span><ul><li><b>Réalisées</b><strong>${done}</strong></li><li><b>Restantes</b><strong>${items.length-done}</strong></li></ul></div><div class="progress-donut" style="--progress:${p}%"><span>${p}%</span><small>Aujourd’hui</small></div></div>`}else{root.innerHTML=`<div class="paper-card"><div class="row"><div class="row-main"><b>💼 Routine Travail</b><small>Hydratation, organisation, préparation du lendemain.</small></div><button class="brown-button" data-profile="work">Utiliser</button></div><div class="row"><div class="row-main"><b>🏡 Routine Repos</b><small>Sport, balade, courses et projets.</small></div><button class="brown-button" data-profile="rest">Utiliser</button></div><div class="row"><div class="row-main"><b>✈️ Routine Vacances</b><small>Hydratation, dépenses voyage et souvenirs.</small></div><button class="brown-button" data-profile="vacation">Utiliser</button></div></div>`}bindRows();$$("[data-profile]").forEach(b=>b.onclick=()=>{state.dayMode=b.dataset.profile;save();routineTab="today";render()})}
