@@ -410,3 +410,154 @@ body:after{
  .aurora-message p{max-width:88%}
  .home-shortcuts button{min-height:112px}
 }
+
+/* =========================================================
+   AURORA 1.3 — ÉTAPE 4 / DESIGN PREMIUM VALIDÉ
+   ========================================================= */
+:root{
+  --a-bg:#f7efe5;--a-paper:#fffaf4;--a-paper-warm:#fbf1e5;
+  --a-chocolate:#3d271d;--a-brown:#65432f;--a-caramel:#9f704d;
+  --a-gold:#c8943e;--a-gold-light:#ead29e;--a-text:#35251e;
+  --a-muted:#8b7567;--a-line:rgba(112,72,44,.17);
+  --a-shadow:0 18px 48px rgba(73,43,25,.11);
+  --a-shadow-hover:0 24px 54px rgba(73,43,25,.16);
+}
+html,body{background:var(--a-bg)!important}
+body{
+  background:
+    radial-gradient(circle at 29% 5%,rgba(255,255,255,.96),transparent 32%),
+    radial-gradient(circle at 87% 78%,rgba(225,185,125,.20),transparent 36%),
+    linear-gradient(115deg,#fffaf4 0%,#f8eee3 54%,#f0dbc3 100%)!important;
+}
+body:before{
+  background:
+    url("assets/lily-elegant.svg") left -150px top 20px/520px auto no-repeat,
+    url("assets/lily-elegant.svg") right -180px bottom -70px/620px auto no-repeat,
+    url("assets/lotus-gold.svg") 76% 13%/260px auto no-repeat!important;
+  opacity:.17!important;
+}
+body:after{opacity:.13!important}
+.ornament{display:none!important}.tree-of-life,.botanical{display:none!important}
+
+.app-shell{max-width:1500px!important;padding:22px 28px 108px!important}
+.app-header{border-radius:22px!important;padding:12px 18px!important;margin-bottom:18px!important;background:rgba(255,250,244,.98)!important}
+.home-layout{grid-template-columns:minmax(610px,1.12fr) minmax(390px,.88fr)!important;gap:24px!important}
+
+.portrait-panel{
+  min-height:760px!important;border-radius:30px!important;
+  grid-template-columns:minmax(260px,.72fr) minmax(400px,1.28fr)!important;
+  background:var(--a-paper)!important;border:1px solid var(--a-line)!important;
+  box-shadow:0 24px 65px rgba(63,38,23,.14)!important;
+}
+.portrait-illustration{background:#f6e7d7!important}
+.portrait-illustration img{filter:sepia(.08) saturate(.84) contrast(1.02)!important;object-position:48% top!important}
+.portrait-panel:after{background:linear-gradient(90deg,transparent 0 36%,rgba(255,250,244,.95) 49%,#fffaf4 70%)!important}
+.portrait-panel:before{
+  content:""!important;position:absolute!important;inset:0!important;
+  background:url("assets/lily-elegant.svg") right -145px top -120px/500px auto no-repeat!important;
+  opacity:.075!important;pointer-events:none!important;z-index:1!important;
+}
+.portrait-copy{padding:46px 38px 32px 24px!important;background:transparent!important}
+.date-eyebrow{color:var(--a-gold)!important;font-weight:700!important}
+.portrait-copy h1{font-family:var(--serif)!important;font-size:52px!important;font-weight:600!important;line-height:1!important;color:var(--a-chocolate)!important;margin:10px 0 5px!important}
+#homeTime{color:var(--a-muted)!important;margin:0 0 8px!important}
+.soft-quote{font-family:var(--serif)!important;font-size:18px!important;max-width:410px!important;margin:15px 0 20px!important}
+.day-mode{align-self:flex-start!important;margin-left:0!important;min-width:170px!important;padding:12px 28px!important}
+.home-shortcuts{gap:11px!important;margin:25px 0!important}
+.home-shortcuts button{
+  min-height:116px!important;border-radius:19px!important;background:#fffaf4!important;
+  border:1px solid rgba(150,101,61,.20)!important;box-shadow:0 9px 25px rgba(74,43,25,.07)!important;
+}
+.home-shortcuts button:hover{box-shadow:var(--a-shadow-hover)!important}
+.home-shortcuts span{font-size:24px!important;color:var(--a-gold)!important}
+.home-shortcuts b{font-family:var(--serif)!important;font-size:18px!important}
+
+.aurora-message{
+  min-height:176px!important;border-radius:24px!important;padding:24px 26px!important;
+  background:
+    url("assets/lotus-gold.svg") right -22px bottom -25px/230px auto no-repeat,
+    radial-gradient(circle at 80% 22%,rgba(221,180,101,.12),transparent 25%),
+    linear-gradient(135deg,#4a3024,#2f1d16)!important;
+  border:1px solid rgba(222,185,113,.55)!important;
+}
+.aurora-message:before{background:linear-gradient(110deg,rgba(255,255,255,.04),transparent 50%)!important;opacity:1!important}
+.aurora-message>span{font-family:var(--serif)!important;font-style:italic!important;font-size:24px!important;color:#e7c77f!important}
+.aurora-message p{font-size:16px!important;line-height:1.6!important;max-width:64%!important;color:#fff8ed!important}
+.message-mandala{display:none!important}
+
+.dashboard-panel{gap:18px!important}
+.summary-card,.priority-card,.smart-card,.paper-card,.budget-hero,.journal-card,.business-hero,.stats-chart-card,.agenda-tasks-card,.task-summary,.routine-mode{
+  background:var(--a-paper)!important;border:1px solid var(--a-line)!important;
+  border-radius:25px!important;box-shadow:var(--a-shadow)!important;
+}
+.summary-card,.priority-card,.smart-card{padding:27px!important}
+.summary-card{grid-template-columns:1fr 138px!important;min-height:255px!important}
+.summary-card:before{background:url("assets/lily-elegant.svg") center/contain no-repeat!important;width:230px!important;height:220px!important;right:-90px!important;bottom:-80px!important;opacity:.055!important}
+.summary-card>div>span,.priority-card>span,.smart-card>span{font-family:var(--serif)!important;font-style:italic!important;font-size:27px!important;color:var(--a-brown)!important}
+.summary-card li{padding:9px 0!important}
+.summary-card li b{font-family:var(--serif)!important;font-size:17px!important}
+.progress-donut{box-shadow:inset 0 0 0 9px #f2e4d4!important}
+.priority-card{min-height:190px!important}
+.priority-card:before{background:url("assets/lily-elegant.svg") center/contain no-repeat!important;width:180px!important;height:180px!important;right:-52px!important;top:-55px!important;opacity:.06!important}
+.priority-card h3,.smart-card h3{font-family:var(--serif)!important;font-size:29px!important;font-weight:600!important;margin:15px 0 10px!important}
+.priority-progress{height:7px!important;background:#efe2d1!important}.priority-progress i{background:linear-gradient(90deg,var(--a-brown),var(--a-gold),#ecd491)!important}
+.smart-card{min-height:230px!important}.smart-card:before{background:url("assets/lotus-gold.svg") center/contain no-repeat!important;opacity:.045!important}
+.smart-card p{font-size:16px!important;line-height:1.55!important;color:var(--a-muted)!important}
+
+.water-glasses{gap:8px!important}.water-glass{height:44px!important}.water-glass:before{border-color:#a27655!important;background:#fffdf9!important}.water-glass.filled span{background:linear-gradient(180deg,#edcc81,#c28b34)!important;height:29px!important}
+
+/* navigation de bureau inspirée de la maquette */
+@media(min-width:1180px){
+  body{padding-left:235px!important}
+  .app-shell{margin:0 auto!important;width:100%!important}
+  .app-header{display:none!important}
+  .side-menu{
+    display:flex!important;transform:none!important;visibility:visible!important;
+    position:fixed!important;left:0!important;top:0!important;bottom:0!important;width:235px!important;
+    z-index:90!important;padding:28px 15px 24px!important;flex-direction:column!important;
+    background:
+      url("assets/lily-elegant.svg") left -115px bottom -115px/380px auto no-repeat,
+      linear-gradient(180deg,#432c21 0%,#2d1c15 100%)!important;
+    border:0!important;border-radius:0!important;box-shadow:12px 0 38px rgba(46,27,18,.18)!important;
+  }
+  .side-menu .menu-head{justify-content:center!important;margin-bottom:20px!important}
+  .side-menu .menu-head>button{display:none!important}
+  .side-menu .brand{flex-direction:column!important;text-align:center!important;gap:7px!important}
+  .side-menu .brand-mark{width:60px!important;height:60px!important;background:url("assets/lotus-gold.svg") center/88px auto no-repeat!important;color:transparent!important;border-radius:0!important}
+  .side-menu .brand strong{font-family:var(--serif)!important;font-size:32px!important;color:#f8ead1!important;letter-spacing:.14em!important;text-transform:uppercase!important}
+  .side-menu .brand small{color:#cfae75!important}
+  .side-menu>button[data-go]{
+    color:#f9ead5!important;background:transparent!important;border:1px solid transparent!important;
+    border-radius:14px!important;text-align:left!important;padding:12px 16px 12px 44px!important;
+    margin:2px 0!important;position:relative!important;font-family:var(--serif)!important;font-size:17px!important;
+  }
+  .side-menu>button[data-go]:before{content:"✦";position:absolute;left:17px;color:#d6ad66;font-size:12px;top:15px}
+  .side-menu>button[data-go]:hover,.side-menu>button[data-go].active{background:rgba(255,242,213,.10)!important;border-color:rgba(222,181,103,.65)!important;color:#f4cf84!important}
+  .side-menu:after{content:"Chaque jour est une nouvelle occasion de créer la vie que tu aimes.";margin-top:auto;padding:18px 18px 64px;color:#d7b36e;text-align:center;font-family:var(--serif);font-size:15px;line-height:1.45;border-top:1px solid rgba(224,188,116,.25)}
+  .bottom-nav{display:none!important}
+}
+
+/* autres pages */
+.page-heading{border-radius:24px!important;padding:20px 24px!important}.page-heading h2{font-family:var(--serif)!important;font-size:38px!important}.page-heading span{color:var(--a-gold)!important}
+.segmented{background:#efe1d0!important;padding:5px!important}.segmented button{border-radius:13px!important}.segmented button.active{background:linear-gradient(135deg,#65432f,#3e271d)!important}
+.round-add,.back-button{background:#fffaf4!important;border:1px solid var(--a-line)!important;color:var(--a-brown)!important;box-shadow:0 8px 20px rgba(72,43,26,.08)!important}
+.row{background:#fffaf4!important;border:1px solid var(--a-line)!important;border-radius:17px!important;box-shadow:0 7px 20px rgba(68,39,23,.055)!important}
+.stats-chart-card:after,.journal-card:after{background:url("assets/lily-elegant.svg") center/contain no-repeat!important;opacity:.055!important}
+.bottom-nav{border-radius:22px 22px 0 0!important}
+.version{font-size:10px!important;padding:4px 7px!important;border-radius:8px 0 0 0!important}
+
+@media(max-width:1179px){
+  .side-menu{background:linear-gradient(180deg,#432c21,#2d1c15)!important}.side-menu>button{color:#fff1da!important}
+}
+@media(max-width:850px){
+  .app-shell{padding:10px 12px 98px!important}.home-layout{display:block!important}.dashboard-panel{margin-top:16px!important}
+  .portrait-panel{min-height:auto!important;grid-template-columns:1fr!important}
+  .portrait-illustration{height:430px!important}.portrait-panel:after{background:linear-gradient(0deg,#fffaf4 0%,rgba(255,250,244,.98) 25%,transparent 58%)!important}
+  .portrait-copy{padding:26px 22px 24px!important}.portrait-copy h1{font-size:43px!important}.home-shortcuts{grid-template-columns:repeat(2,1fr)!important}
+  .summary-card{grid-template-columns:1fr!important}.progress-donut{margin:auto!important}.aurora-message p{max-width:75%!important}
+}
+@media(max-width:520px){
+  body:before{background:url("assets/lily-elegant.svg") left -180px top 80px/390px auto no-repeat,url("assets/lotus-gold.svg") right -80px bottom 70px/260px auto no-repeat!important;opacity:.11!important}
+  .portrait-illustration{height:340px!important}.portrait-copy h1{font-size:38px!important}.soft-quote{font-size:16px!important}.aurora-message p{max-width:82%!important}
+  .summary-card,.priority-card,.smart-card{padding:21px!important}.summary-card>div>span,.priority-card>span,.smart-card>span{font-size:23px!important}
+}
