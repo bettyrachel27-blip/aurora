@@ -1,4 +1,4 @@
-# Aurora 1.2
+# Aurora 1.3 — Étape 1
 
 Version premium de l’application Aurora.
 

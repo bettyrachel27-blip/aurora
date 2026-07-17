@@ -10,7 +10,7 @@
   <title>Aurora — Mon Univers</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
   <div class="splash" id="splash">
@@ -23,8 +23,8 @@
   <div class="ornament ornament-b"></div>
   <div class="ornament ornament-c"></div>
   <div class="tree-of-life" aria-hidden="true"></div>
-  <div class="lotus-field lotus-left" aria-hidden="true">❀</div>
-  <div class="lotus-field lotus-right" aria-hidden="true">❀</div>
+  <div class="botanical botanical-left" aria-hidden="true"></div>
+  <div class="botanical botanical-right" aria-hidden="true"></div>
 
   <div class="app-shell">
     <header class="app-header">
@@ -71,11 +71,11 @@
               <div>
                 <span>Résumé du jour</span>
                 <ul>
-                  <li><b>Rendez-vous</b><strong id="summaryEvents">0</strong></li>
-                  <li><b>Tâches</b><strong id="summaryTasks">0</strong></li>
-                  <li><b>Habitudes</b><strong id="summaryHabits">0</strong></li>
-                  <li><b>Eau bue</b><strong id="summaryWater">1,2 L</strong></li>
-                  <li><b>Pas</b><strong id="summarySteps">2 845</strong></li>
+                  <li class="summary-link" data-go="agenda"><b>Rendez-vous</b><strong id="summaryEvents">0</strong></li>
+                  <li class="summary-link" data-go="tasks"><b>Tâches</b><strong id="summaryTasks">0</strong></li>
+                  <li class="summary-link" data-go="routines"><b>Habitudes</b><strong id="summaryHabits">0</strong></li>
+                  <li class="summary-adjust"><b>Eau bue</b><span class="mini-stepper"><button id="waterMinus" aria-label="Retirer un verre">−</button><strong id="summaryWater">1,2 L</strong><button id="waterPlus" aria-label="Ajouter un verre">＋</button></span></li>
+                  <li class="summary-adjust"><b>Pas</b><span class="mini-stepper"><button id="stepsMinus" aria-label="Retirer 500 pas">−</button><strong id="summarySteps">2 845</strong><button id="stepsPlus" aria-label="Ajouter 500 pas">＋</button></span></li>
                 </ul>
               </div>
               <div class="progress-donut" id="homeDonut"><span id="homeProgress">0%</span><small>Progression<br>du jour</small></div>
@@ -226,14 +226,14 @@
           <span></span>
         </div>
 
-        <div class="segmented">
-          <button class="active">Semaine</button><button>Mois</button><button>Année</button>
+        <div class="segmented" id="statsTabs">
+          <button class="active" data-stats="week">Semaine</button><button data-stats="month">Mois</button><button data-stats="year">Année</button>
         </div>
 
         <article class="stats-chart-card">
-          <span>Humeur</span>
-          <div class="mock-chart"><i style="height:32%"></i><i style="height:48%"></i><i style="height:42%"></i><i style="height:65%"></i><i style="height:58%"></i><i style="height:78%"></i><i style="height:70%"></i></div>
-          <div class="chart-labels"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+          <span id="statsChartTitle">Humeur — semaine</span>
+          <div class="mock-chart" id="statsChart"></div>
+          <div class="chart-labels" id="statsLabels"></div>
         </article>
 
         <div class="stats-grid">
