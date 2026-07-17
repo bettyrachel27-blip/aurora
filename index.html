@@ -10,7 +10,7 @@
   <title>Aurora — Mon Univers</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=132">
 </head>
 <body>
   <div class="splash" id="splash">
@@ -74,8 +74,10 @@
                   <li class="summary-link" data-go="agenda"><b>Rendez-vous</b><strong id="summaryEvents">0</strong></li>
                   <li class="summary-link" data-go="tasks"><b>Tâches</b><strong id="summaryTasks">0</strong></li>
                   <li class="summary-link" data-go="routines"><b>Habitudes</b><strong id="summaryHabits">0</strong></li>
-                  <li class="summary-adjust"><b>Eau bue</b><span class="mini-stepper"><button id="waterMinus" aria-label="Retirer un verre">−</button><strong id="summaryWater">1,2 L</strong><button id="waterPlus" aria-label="Ajouter un verre">＋</button></span></li>
-                  <li class="summary-adjust"><b>Pas</b><span class="mini-stepper"><button id="stepsMinus" aria-label="Retirer 500 pas">−</button><strong id="summarySteps">2 845</strong><button id="stepsPlus" aria-label="Ajouter 500 pas">＋</button></span></li>
+                  <li class="water-summary">
+                    <div class="water-heading"><b>Eau bue</b><strong id="summaryWater">0 / 8 verres</strong></div>
+                    <div class="water-glasses" id="waterGlasses" aria-label="Suivi de l’eau"></div>
+                  </li>
                 </ul>
               </div>
               <div class="progress-donut" id="homeDonut"><span id="homeProgress">0%</span><small>Progression<br>du jour</small></div>
