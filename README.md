@@ -1,6 +1,3 @@
-Aurora 1.3 — Étape 6
+# Aurora 1.4 — Renaissance
 
-- Carte « Message d’Aurora » rendue totalement opaque.
-- Suppression des visuels fantômes et du mandala en transparence dans cette carte.
-- Nouvelle typographie : Allura pour le titre du message, Playfair Display pour les titres et Manrope pour le texte.
-- Cache PWA renouvelé (version 136).
+Refonte visuelle fidèle à la maquette validée. Les fonctionnalités et les données de la version 1.3 sont conservées.
