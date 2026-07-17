@@ -785,3 +785,110 @@ html,body,button,input,textarea,select{font-family:var(--aurora-text)!important}
   .aurora-message>span{font-size:29px!important}
   .aurora-message p{font-size:16px!important;max-width:100%!important}
 }
+
+/* ===== Aurora 1.4 — Sidebar façon maquette + refonte du tableau de bord ===== */
+:root{
+  --sb-w:264px;
+  --panel-dark-1:#2c1c13;
+  --panel-dark-2:#181009;
+  --gold-line:rgba(201,149,63,.35);
+}
+
+/* ---------- Barre latérale (desktop) ---------- */
+.sidebar{
+  display:none;
+  position:fixed;
+  z-index:60;
+  top:0;left:0;bottom:0;
+  width:var(--sb-w);
+  padding:34px 22px 26px;
+  background:linear-gradient(175deg,var(--panel-dark-1) 0%,var(--panel-dark-2) 100%);
+  color:#f3e6d3;
+  flex-direction:column;
+  box-shadow:0 0 60px rgba(20,11,6,.35);
+}
+.sidebar-brand{display:flex;align-items:center;gap:12px;padding-bottom:26px;margin-bottom:20px;border-bottom:1px solid rgba(230,196,140,.18)}
+.sidebar-mark{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,var(--gold2,#e7c269),var(--gold,#c49133));color:#2c1c13;font-size:16px;flex:none}
+.sidebar-brand-text strong{display:block;font-family:var(--aurora-heading);font-size:20px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:#fbeed9}
+.sidebar-brand-text small{display:block;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:#c6a883;margin-top:3px}
+.sidebar-nav{display:flex;flex-direction:column;gap:5px}
+.sidebar-nav button{
+  display:flex;align-items:center;gap:13px;
+  border:0;background:transparent;text-align:left;
+  padding:11px 14px;border-radius:14px;
+  color:#e4d2ba;font-family:var(--aurora-text,inherit);font-size:14.5px;font-weight:500;
+  cursor:pointer;transition:background .2s,color .2s;
+}
+.sidebar-nav button .icon{width:20px;font-size:16px;text-align:center;color:#c6a883;flex:none;transition:color .2s}
+.sidebar-nav button:hover{background:rgba(230,196,140,.09)}
+.sidebar-nav button.active{background:linear-gradient(145deg,#e7c269,#c49133);color:#2c1c13;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.sidebar-nav button.active .icon{color:#2c1c13}
+.sidebar-quote{margin-top:auto;padding-top:26px;text-align:center}
+.sidebar-quote p{font-family:var(--aurora-heading);font-style:italic;font-size:13.5px;line-height:1.6;color:#d9c2a0;margin:0}
+.sidebar-quote span{display:block;margin-top:12px;color:var(--gold,#c49133);font-size:16px}
+
+/* ---------- Structure "carte résumé" à la maquette ---------- */
+.summary-card,.summary-card--compact{
+  display:grid!important;
+  grid-template-columns:1fr auto!important;
+  grid-template-areas:"title donut" "list donut" "water water"!important;
+  align-items:start!important;
+  column-gap:20px!important;
+  row-gap:4px!important;
+}
+.summary-card-title{
+  grid-area:title;
+  font-family:var(--aurora-heading)!important;
+  font-style:italic!important;
+  font-weight:600!important;
+  font-size:22px!important;
+  color:var(--ui-chocolate,#3f281e)!important;
+}
+.summary-card .progress-donut,.summary-card--compact .progress-donut{grid-area:donut;justify-self:end}
+.summary-card ul,.summary-card--compact ul{grid-area:list;list-style:none;margin:16px 0 0!important;padding:0!important;display:grid;gap:2px}
+.summary-card li,.summary-card--compact li{
+  display:flex!important;align-items:center;gap:12px;
+  padding:10px 0!important;border-bottom:1px solid rgba(91,57,40,.09);
+  justify-content:flex-start!important;
+}
+.summary-card li b,.summary-card--compact li b{font-weight:500;color:var(--ui-chocolate,#3f281e)}
+.summary-card li strong,.summary-card--compact li strong{margin-left:auto;font:600 17px var(--ui-serif,serif);color:var(--ui-chocolate,#3f281e)}
+.row-icon{
+  width:26px;height:26px;flex:none;border-radius:8px;
+  display:grid;place-items:center;font-size:13px;
+  background:rgba(196,145,51,.14);color:var(--ui-gold,#c9953f);
+}
+.summary-card .water-summary{grid-area:water;margin-top:14px!important;padding-top:14px!important;border-top:1px solid rgba(91,57,40,.12)!important}
+
+/* ---------- Carte Aurora Intelligence assortie au panneau sombre de la maquette ---------- */
+.smart-card{
+  background:linear-gradient(160deg,#33211a 0%,#1c120c 100%)!important;
+  color:#f3e6d3!important;
+  isolation:isolate;
+  position:relative;
+  overflow:hidden;
+}
+.smart-card:before{background:url("assets/lotus-gold.svg") right -30px bottom -30px/230px auto no-repeat!important;opacity:.14!important}
+.smart-card>span{color:var(--gold2,#e7c269)!important;font-style:italic!important}
+.smart-card h3{color:#fbeed9!important}
+.smart-card p{color:#d9c2a0!important}
+.smart-card .brown-button{background:linear-gradient(145deg,var(--gold2,#e7c269),var(--gold,#c49133))!important;color:#2c1c13!important;font-weight:700!important}
+
+/* ---------- Layout desktop : place pour la sidebar ---------- */
+@media(min-width:1000px){
+  body{display:flex}
+  .sidebar{display:flex}
+  .app-header .menu-button,.app-header .brand{display:none}
+  .app-header{justify-content:flex-end;padding-top:6px}
+  .bottom-nav{display:none}
+  .app-shell{
+    margin:0 0 0 var(--sb-w);
+    width:calc(100% - var(--sb-w));
+    max-width:1220px;
+    padding:26px 34px 60px;
+  }
+  .ornament,.tree-of-life,.botanical{display:none}
+}
+@media(max-width:999px){
+  .sidebar{display:none!important}
+}

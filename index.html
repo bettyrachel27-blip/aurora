@@ -29,6 +29,28 @@
   <div class="botanical botanical-left" aria-hidden="true"></div>
   <div class="botanical botanical-right" aria-hidden="true"></div>
 
+  <aside class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar-brand">
+      <span class="sidebar-mark">✦</span>
+      <div class="sidebar-brand-text"><strong>Aurora</strong><small>Mon Univers</small></div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="active" data-go="home"><span class="icon">⌂</span>Accueil</button>
+      <button data-go="agenda"><span class="icon">▦</span>Agenda</button>
+      <button data-go="tasks"><span class="icon">✓</span>Tâches</button>
+      <button data-go="routines"><span class="icon">♢</span>Routines</button>
+      <button data-go="budget"><span class="icon">▱</span>Budget</button>
+      <button data-go="journal"><span class="icon">☾</span>Journal du soir</button>
+      <button data-go="projects"><span class="icon">✥</span>Betty &amp; Co</button>
+      <button data-go="stats"><span class="icon">▥</span>Statistiques</button>
+      <button data-go="settings"><span class="icon">⚙</span>Paramètres</button>
+    </nav>
+    <div class="sidebar-quote">
+      <p>Chaque jour est une nouvelle occasion de créer la vie que tu aimes.</p>
+      <span>♡</span>
+    </div>
+  </aside>
+
   <div class="app-shell">
     <header class="app-header">
       <button class="menu-button" id="openMenu" aria-label="Menu">☰</button>
@@ -71,19 +93,17 @@
 
           <section class="dashboard-panel">
             <article class="summary-card">
-              <div>
-                <span>Résumé du jour</span>
-                <ul>
-                  <li class="summary-link" data-go="agenda"><b>Rendez-vous</b><strong id="summaryEvents">0</strong></li>
-                  <li class="summary-link" data-go="tasks"><b>Tâches</b><strong id="summaryTasks">0</strong></li>
-                  <li class="summary-link" data-go="routines"><b>Habitudes</b><strong id="summaryHabits">0</strong></li>
-                  <li class="water-summary">
-                    <div class="water-heading"><b>Eau bue</b><strong id="summaryWater">0 / 8 verres</strong></div>
-                    <div class="water-glasses" id="waterGlasses" aria-label="Suivi de l’eau"></div>
-                  </li>
-                </ul>
-              </div>
+              <span class="summary-card-title">Résumé du jour</span>
               <div class="progress-donut" id="homeDonut"><span id="homeProgress">0%</span><small>Progression<br>du jour</small></div>
+              <ul>
+                <li class="summary-link" data-go="agenda"><i class="row-icon">▦</i><b>Rendez-vous</b><strong id="summaryEvents">0</strong></li>
+                <li class="summary-link" data-go="tasks"><i class="row-icon">✓</i><b>Tâches</b><strong id="summaryTasks">0</strong></li>
+                <li class="summary-link" data-go="routines"><i class="row-icon">♢</i><b>Habitudes</b><strong id="summaryHabits">0</strong></li>
+              </ul>
+              <div class="water-summary">
+                <div class="water-heading"><b>Eau bue</b><strong id="summaryWater">0 / 8 verres</strong></div>
+                <div class="water-glasses" id="waterGlasses" aria-label="Suivi de l’eau"></div>
+              </div>
             </article>
 
             <article class="priority-card">
@@ -265,6 +285,25 @@
         </article>
         <div id="projectRows" class="rows roomy"></div>
       </section>
+
+      <section class="screen" data-screen="settings">
+        <div class="page-heading">
+          <button class="back-button" data-go="home">←</button>
+          <div><span>Aurora</span><h2>Paramètres</h2></div>
+          <span></span>
+        </div>
+        <article class="paper-card">
+          <div class="section-title"><h3>Ton univers</h3></div>
+          <div class="rows roomy">
+            <div class="row"><div class="row-main"><b>Prénom</b><small>Betty</small></div></div>
+            <div class="row"><div class="row-main"><b>Mode du jour</b><small id="settingsDayMode">Travail</small></div></div>
+            <div class="row"><div class="row-main"><b>Notifications</b><small>Activées</small></div></div>
+          </div>
+        </article>
+        <article class="paper-card">
+          <p>Les réglages avancés de ton univers Aurora arrivent bientôt ✦</p>
+        </article>
+      </section>
     </main>
 
     <nav class="bottom-nav">
@@ -286,6 +325,7 @@
     <button data-go="journal">Journal du soir</button>
     <button data-go="projects">Betty & Co</button>
     <button data-go="stats">Statistiques</button>
+    <button data-go="settings">Paramètres</button>
   </aside>
 
   <aside class="notification-drawer" id="notificationDrawer">
