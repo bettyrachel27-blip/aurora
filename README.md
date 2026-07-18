@@ -1,10 +1,10 @@
-# Aurora 1.6 — Rythme intelligent
+# Aurora 1.8 — Pages adaptatives intelligentes
 
-Cette version conserve la clé de stockage `aurora-alpha-13` afin de préserver les rendez-vous, tâches, budget, routines et autres données déjà enregistrées dans le navigateur.
+Cette version conserve les données enregistrées avec la clé `aurora-alpha-13`.
 
-## Corrections 1.6
-- navigation et boutons reconnectés ;
-- bouton **Planifier** relié à la page **Mon rythme** ;
-- écran d’entrée Aurora restauré avant l’application ;
-- fichiers CSS et JavaScript renommés pour éviter l’ancien cache ;
-- service worker actualisé en version 1.6.
+Nouveautés :
+- chaque onglet ouvre une page dédiée ;
+- chaque page s’adapte au mode Travail, Repos, Récupération, Vacances ou Repos santé ;
+- les tâches sont automatiquement orientées vers Pro ou Perso selon le jour ;
+- les rendez-vous pertinents sont remontés en premier ;
+- les routines, messages et conseils changent avec le rythme du jour.

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-1.6.css?v=160">
+  <link rel="stylesheet" href="style-1.8.css?v=180">
 </head>
 <body>
   <section class="welcome-screen" id="welcomeScreen" aria-label="Bienvenue dans Aurora">
@@ -117,6 +117,7 @@
           <div><span>Aurora Agenda</span><h2>Agenda</h2></div>
           <button class="round-add" data-add="event">＋</button>
         </div>
+        <article class="page-context" data-context-for="agenda" aria-live="polite"></article>
 
         <div class="segmented" id="agendaTabs">
           <button class="active" data-agenda="day">Jour</button>
@@ -149,6 +150,7 @@
           <div><span>Aurora Organisation</span><h2>Tâches</h2></div>
           <button class="round-add" data-add="task">＋</button>
         </div>
+        <article class="page-context" data-context-for="tasks" aria-live="polite"></article>
 
         <div class="segmented scrollable" id="taskTabs">
           <button class="active" data-task-tab="all">Toutes</button>
@@ -171,6 +173,7 @@
           <div><span>Aurora Habits</span><h2>Routines</h2></div>
           <button class="round-add" data-add="habit">＋</button>
         </div>
+        <article class="page-context" data-context-for="routines" aria-live="polite"></article>
 
         <div class="segmented" id="routineTabs">
           <button class="active" data-routine-tab="today">Aujourd’hui</button>
@@ -222,6 +225,7 @@
           <div><span>Aurora Budget</span><h2>Budget</h2></div>
           <button class="round-add" data-add="expense">＋</button>
         </div>
+        <article class="page-context" data-context-for="budget" aria-live="polite"></article>
 
         <article class="budget-hero">
           <span>Reste disponible</span>
@@ -249,6 +253,7 @@
           <div><span>Aurora Journal</span><h2>Journal du soir</h2></div>
           <span></span>
         </div>
+        <article class="page-context" data-context-for="journal" aria-live="polite"></article>
 
         <article class="journal-card">
           <h3>Comment s’est passée ta journée ?</h3>
@@ -268,6 +273,7 @@
           <div><span>Aurora Insights</span><h2>Statistiques</h2></div>
           <span></span>
         </div>
+        <article class="page-context" data-context-for="stats" aria-live="polite"></article>
 
         <div class="segmented" id="statsTabs">
           <button class="active" data-stats="week">Semaine</button><button data-stats="month">Mois</button><button data-stats="year">Année</button>
@@ -293,6 +299,7 @@
           <div><span>Aurora Projects</span><h2>Betty & Co</h2></div>
           <button class="round-add" data-add="projectTask">＋</button>
         </div>
+        <article class="page-context" data-context-for="projects" aria-live="polite"></article>
 
         <article class="business-hero">
           <span>Auto-entreprise</span>
@@ -355,8 +362,25 @@
     </form>
   </dialog>
 
+
+  <dialog id="taskActionDialog" class="task-action-dialog">
+    <form method="dialog" id="taskActionForm">
+      <div class="menu-head"><div><small id="taskActionCategory">Tâche</small><h3 id="taskActionTitle">Gérer la tâche</h3></div><button type="button" id="closeTaskAction">✕</button></div>
+      <p id="taskActionHint" class="task-action-hint"></p>
+      <div class="task-action-grid">
+        <button type="button" data-task-action="complete" class="task-complete">✓<span>Valider</span></button>
+        <button type="button" data-task-action="tomorrow">↪<span>Reporter à demain</span></button>
+        <button type="button" data-task-action="next-workday">💼<span>Prochain jour travaillé</span></button>
+        <button type="button" data-task-action="next-free-day">🏡<span>Prochain jour libre</span></button>
+        <button type="button" data-task-action="choose-date">📅<span>Choisir une date</span></button>
+        <button type="button" data-task-action="delete" class="task-delete">🗑<span>Supprimer</span></button>
+      </div>
+      <label class="task-date-picker" id="taskDatePicker">Nouvelle date<input type="date" id="taskReportDate"></label>
+    </form>
+  </dialog>
+
   <div class="toast" id="toast"></div>
-  <div class="version">Aurora 1.6 · Rythme intelligent</div>
-  <script src="app-1.6.js?v=160"></script>
+  <div class="version">Aurora 1.7 · Tâches intelligentes</div>
+  <script src="app-1.8.js?v=180"></script>
 </body>
 </html>
