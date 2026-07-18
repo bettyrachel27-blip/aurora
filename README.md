@@ -1,3 +1,5 @@
+Aurora 1.8.1 — Correctifs visuels
+
 # Aurora 1.8 — Pages adaptatives intelligentes
 
 Cette version conserve les données enregistrées avec la clé `aurora-alpha-13`.

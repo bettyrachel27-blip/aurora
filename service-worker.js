@@ -1,4 +1,4 @@
-const CACHE='aurora-1.8-v1';
+const CACHE='aurora-1.8.1-v1';
 const ASSETS=['./','./index.html','./style-1.8.css?v=170','./app-1.8.js?v=170','./manifest.webmanifest','./icon-192.png','./icon-512.png','./assets/aurora-woman-clean.webp','./assets/lily-elegant.svg','./assets/lotus-gold.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
