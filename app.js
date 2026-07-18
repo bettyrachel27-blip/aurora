@@ -41,19 +41,103 @@ const base={
     {id:1,title:"Rendez-vous dans 1 h",text:"Dentiste à 10 h 30.",read:false},
     {id:2,title:"Priorité travail",text:"Préparer le service du dîner.",read:false},
     {id:3,title:"Budget",text:"Pense à enregistrer tes dépenses.",read:false}
-  ],journal:[]
+  ],journal:[],
+  daySchedule:{},
+  weeklyRhythm:{1:"work",2:"work",3:"work",4:"work",5:"work",6:"rest",0:"rest"},
+  habitHistory:[],
+  aiPreferences:{learning:true}
 };
 let state=load(),agendaMode="day",taskTab="all",routineTab="today",statsPeriod="week";
 const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
-function load(){try{return {...structuredClone(base),...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch{return structuredClone(base)}}
+function load(){
+  try{
+    const stored=JSON.parse(localStorage.getItem(KEY)||"{}");
+    const merged={...structuredClone(base),...stored};
+    merged.events=Array.isArray(stored.events)?stored.events:structuredClone(base.events);
+    merged.tasks=Array.isArray(stored.tasks)?stored.tasks:structuredClone(base.tasks);
+    merged.habits=Array.isArray(stored.habits)?stored.habits:structuredClone(base.habits);
+    merged.daySchedule={...(base.daySchedule||{}),...(stored.daySchedule||{})};
+    merged.weeklyRhythm={...base.weeklyRhythm,...(stored.weeklyRhythm||{})};
+    merged.habitHistory=Array.isArray(stored.habitHistory)?stored.habitHistory:[];
+    merged.aiPreferences={...base.aiPreferences,...(stored.aiPreferences||{})};
+    return merged;
+  }catch{return structuredClone(base)}
+}
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function addDays(iso,n){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
 function fmt(iso,opts={day:"numeric",month:"long",year:"numeric"}){return new Date(iso+"T12:00:00").toLocaleDateString("fr-FR",opts)}
 const typeLabel={personal:"Personnel",work:"Travail",business:"Betty & Co"};
 const reportLabel={tomorrow:"Au lendemain","next-workday":"Prochain jour travaillé","next-free-day":"Prochain jour libre","until-done":"Chaque jour jusqu’à fait",none:"Sans report automatique"};
-const dayLabel={work:"Travail",rest:"Repos",vacation:"Vacances",sick:"Repos santé"};
-function nextWorkday(iso){let d=iso;do{d=addDays(d,1)}while([0,6].includes(new Date(d+"T12:00:00").getDay()));return d}
-function nextFreeDay(iso){let d=iso;do{d=addDays(d,1)}while(![0,6].includes(new Date(d+"T12:00:00").getDay()));return d}
+const dayLabel={work:"Travail",rest:"Repos",recovery:"Récupération",vacation:"Vacances",sick:"Repos santé"};
+const modeIcon={work:"💼",rest:"🏡",recovery:"🌙",vacation:"✈️",sick:"🌿"};
+
+function getModeForDate(iso){
+  if(state.daySchedule&&state.daySchedule[iso])return state.daySchedule[iso];
+  const day=new Date(iso+"T12:00:00").getDay();
+  return (state.weeklyRhythm&&state.weeklyRhythm[day])||"work";
+}
+function setModeForDate(iso,mode){state.daySchedule=state.daySchedule||{};state.daySchedule[iso]=mode;if(iso===isoToday())state.dayMode=mode;save()}
+function timeContext(){
+  const h=new Date().getHours();
+  if(h<11)return {key:"morning",label:"Matin",icon:"☀️",text:"Un démarrage doux et clair",group:"Matin"};
+  if(h<14)return {key:"midday",label:"Midi",icon:"🌤️",text:"Pause, repas et hydratation",group:"Midi"};
+  if(h<18)return {key:"afternoon",label:"Après-midi",icon:"🌿",text:"Concentration et progression",group:"Après-midi"};
+  return {key:"evening",label:"Soir",icon:"🌙",text:"Bilan et retour au calme",group:"Soir"};
+}
+function recordHabit(habitId,done){
+  state.habitHistory=state.habitHistory||[];
+  state.habitHistory.push({habitId,date:isoToday(),time:new Date().toTimeString().slice(0,5),done,mode:getModeForDate(isoToday())});
+  if(state.habitHistory.length>500)state.habitHistory=state.habitHistory.slice(-500);
+}
+function habitLearning(){
+  const history=(state.habitHistory||[]).filter(x=>x.done);
+  if(!history.length)return [
+    {icon:"🌱",title:"Apprentissage en cours",text:"Coche tes habitudes pendant quelques jours : Aurora repérera ton rythme."},
+    {icon:"🔒",title:"Données privées",text:"L’analyse reste enregistrée uniquement sur cet appareil."}
+  ];
+  const byHour={morning:0,midday:0,afternoon:0,evening:0};
+  history.forEach(x=>{const h=Number((x.time||"12:00").slice(0,2));byHour[h<11?"morning":h<14?"midday":h<18?"afternoon":"evening"]++});
+  const best=Object.entries(byHour).sort((a,b)=>b[1]-a[1])[0][0];
+  const labels={morning:"le matin",midday:"autour de midi",afternoon:"l’après-midi",evening:"le soir"};
+  const counts={};history.forEach(x=>counts[x.habitId]=(counts[x.habitId]||0)+1);
+  const topId=Number(Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0]);
+  const top=state.habits.find(h=>h.id===topId);
+  const last7=new Set(history.filter(x=>new Date(x.date+"T12:00:00")>=new Date(Date.now()-7*86400000)).map(x=>x.date)).size;
+  return [
+    {icon:"🕰️",title:"Ton meilleur moment",text:`Tu réalises le plus souvent tes habitudes ${labels[best]}.`},
+    {icon:"✨",title:"Habitude régulière",text:top?`« ${top.title} » revient le plus souvent dans ton rythme.`:"Aurora découvre progressivement tes préférences."},
+    {icon:"🌿",title:"Régularité récente",text:`Tu as validé au moins une habitude sur ${last7} jour${last7>1?"s":""} durant les 7 derniers jours.`}
+  ];
+}
+function modeSuggestion(mode,ctx){
+  const suggestions={
+    work:{morning:"Prépare tes priorités et garde un verre d’eau près de toi.",midday:"Accorde-toi une vraie pause avant de reprendre.",afternoon:"Termine une priorité avant d’en ouvrir une autre.",evening:"Ferme doucement la journée et prépare demain."},
+    rest:{morning:"Commence sans urgence : petit-déjeuner, balade ou moment calme.",midday:"Profite de ton temps libre sans remplir toute la journée.",afternoon:"Une activité plaisir suffit pour faire de cette journée une belle journée.",evening:"Prends soin de toi et note un joli moment de la journée."},
+    recovery:{morning:"Aujourd’hui, ton objectif principal est de récupérer.",midday:"Hydrate-toi et choisis une activité vraiment légère.",afternoon:"Écoute ton énergie avant de décider de la suite.",evening:"Prépare une soirée calme et un coucher plus doux."},
+    vacation:{morning:"Laisse de la place à l’imprévu et aux découvertes.",midday:"Pense à l’eau, au budget et à profiter du moment.",afternoon:"Garde un souvenir de ce que tu vis aujourd’hui.",evening:"Note tes dépenses et ton plus beau souvenir."},
+    sick:{morning:"Repos, hydratation et seulement l’essentiel.",midday:"Vérifie comment tu te sens et ralentis encore si nécessaire.",afternoon:"Aucune culpabilité : récupérer est ta priorité.",evening:"Prépare ce dont tu as besoin pour une nuit reposante."}
+  };return suggestions[mode]?.[ctx.key]||"Avance à ton rythme.";
+}
+function openModePicker(anchor,onPick){
+  document.querySelector('.mode-picker-pop')?.remove();
+  const pop=document.createElement('div');pop.className='mode-picker-pop';
+  pop.innerHTML=Object.keys(dayLabel).map(m=>`<button data-pick-mode="${m}">${modeIcon[m]} ${dayLabel[m]}</button>`).join('');
+  document.body.appendChild(pop);const r=anchor.getBoundingClientRect();pop.style.left=Math.min(r.left,innerWidth-250)+'px';pop.style.top=Math.min(r.bottom+6,innerHeight-220)+'px';
+  pop.querySelectorAll('button').forEach(b=>b.onclick=()=>{onPick(b.dataset.pickMode);pop.remove()});
+  setTimeout(()=>document.addEventListener('click',function close(e){if(!pop.contains(e.target)&&e.target!==anchor){pop.remove();document.removeEventListener('click',close)}},{once:false}),0)
+}
+function renderRhythm(){
+  const weekRoot=$("#weeklyRhythm"),cal=$("#rhythmCalendar"),ins=$("#habitInsights");if(!weekRoot||!cal||!ins)return;
+  const names={1:"Lun",2:"Mar",3:"Mer",4:"Jeu",5:"Ven",6:"Sam",0:"Dim"};
+  weekRoot.innerHTML=[1,2,3,4,5,6,0].map(d=>{const m=state.weeklyRhythm[d]||"work";return `<button class="week-day-card" data-weekday="${d}" data-mode="${m}"><b>${names[d]}</b><span>${modeIcon[m]}</span><small>${dayLabel[m]}</small></button>`}).join('');
+  weekRoot.querySelectorAll('[data-weekday]').forEach(b=>b.onclick=e=>openModePicker(b,m=>{state.weeklyRhythm[b.dataset.weekday]=m;save();render()}));
+  cal.innerHTML=Array.from({length:14},(_,i)=>{const date=addDays(isoToday(),i),m=getModeForDate(date),d=new Date(date+'T12:00:00');return `<button class="rhythm-day ${i===0?'today':''}" data-rhythm-date="${date}" data-mode="${m}"><b>${d.toLocaleDateString('fr-FR',{weekday:'short'})}</b><strong>${d.getDate()}</strong><small>${dayLabel[m]}</small><em>${modeIcon[m]}</em></button>`}).join('');
+  cal.querySelectorAll('[data-rhythm-date]').forEach(b=>b.onclick=()=>openModePicker(b,m=>{setModeForDate(b.dataset.rhythmDate,m);render()}));
+  ins.innerHTML=habitLearning().map(x=>`<article class="insight-card"><span>${x.icon}</span><b>${x.title}</b><small>${x.text}</small></article>`).join('');
+}
+
+function nextWorkday(iso){let d=iso;do{d=addDays(d,1)}while(getModeForDate(d)!=="work");return d}
+function nextFreeDay(iso){let d=iso;do{d=addDays(d,1)}while(getModeForDate(d)==="work");return d}
 function applyReports(){let changed=false;const today=isoToday();state.tasks.forEach(t=>{if(t.done||t.due>=today)return;if(t.report==="tomorrow"||t.report==="until-done"){t.due=today;changed=true}else if(t.report==="next-workday"){while(t.due<today)t.due=nextWorkday(t.due);changed=true}else if(t.report==="next-free-day"){while(t.due<today)t.due=nextFreeDay(t.due);changed=true}});if(changed)save()}
 applyReports();
 function visibleHabits(){return state.habits.filter(h=>h.modes.includes(state.dayMode))}
@@ -67,11 +151,14 @@ function topPriority(){const open=todayTasks().filter(t=>!t.done);return open.fi
 function smart(){const p=topPriority();const upcoming=visibleEvents().filter(e=>e.date===isoToday()&&e.time>=new Date().toTimeString().slice(0,5)).sort((a,b)=>a.time.localeCompare(b.time))[0];if(p)return{title:"Commence par ta priorité",text:`« ${p.title} » est la meilleure action à faire maintenant.`,go:"tasks"};if(upcoming)return{title:`Prochain rendez-vous à ${upcoming.time}`,text:`Prépare « ${upcoming.title} » tranquillement.`,go:"agenda"};return{title:"Tout est sous contrôle",text:"Tu peux avancer 15 minutes sur Betty & Co ou prendre du temps pour toi.",go:"projects"}}
 function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1600)}
 function render(){
+ state.dayMode=getModeForDate(isoToday());
+ const ctx=timeContext();document.body.dataset.time=ctx.key;
  const d=new Date(),h=d.getHours(),p=progress(),eventsToday=visibleEvents().filter(e=>e.date===isoToday()),open=todayTasks().filter(t=>!t.done),habits=visibleHabits(),left=remaining(),prio=topPriority(),tip=smart();
  $("#homeDate").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
  $("#helloTitle").textContent=h<12?"Bonjour Betty":h<18?"Bel après-midi Betty":"Bonsoir Betty";
  $("#homeTime").textContent="Il est "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
  $("#dayModeButton").firstChild.textContent=dayLabel[state.dayMode]+" ";
+ if($("#timeContextIcon")){ $("#timeContextIcon").textContent=ctx.icon; $("#timeContextLabel").textContent=ctx.label; $("#timeContextText").textContent=ctx.text; }
  $("#shortcutEvents").textContent=`${eventsToday.length} événements`;
  $("#shortcutTasks").textContent=`${open.length} à faire`;
  $("#shortcutHabits").textContent=`${habits.filter(x=>!x.done).length} à faire`;
@@ -83,8 +170,8 @@ function render(){
  $("#homeProgress").textContent=p+"%";$("#homeDonut").style.setProperty("--progress",p+"%");
  $("#priorityTitle").textContent=prio?prio.title:"Toutes les priorités sont terminées";$("#priorityMeta").textContent=prio?(prio.priority||"NORMAL").toUpperCase():"BRAVO";$("#priorityBar").style.width=(prio?15:100)+"%";
  $("#smartTitle").textContent=tip.title;$("#smartText").textContent=tip.text;$("#smartAction").dataset.smartGo=tip.go;
- $("#auroraMessage").textContent=p<35?"Tu as plusieurs priorités aujourd’hui. Commence par une seule, puis avance à ton rythme.":p<75?"Ta journée avance bien. Continue sans te mettre de pression.":"Tu as beaucoup avancé aujourd’hui. Pense aussi à souffler.";
- renderAgenda();renderTasks();renderRoutines();renderBudget();renderProjects();renderNotifications();renderStats();
+ $("#auroraMessage").textContent=modeSuggestion(state.dayMode,ctx);
+ renderRhythm();renderAgenda();renderTasks();renderRoutines();renderBudget();renderProjects();renderNotifications();renderStats();
 }
 function eventMarkup(e){return `<div class="agenda-event"><time>${e.time}</time><span class="line"></span><article><b>${e.title}</b><small>${typeLabel[e.type]}${e.detail?" · "+e.detail:""}</small></article><button>＋</button></div>`}
 function taskMarkup(t){return `<div class="row ${t.done?"done":""}" data-task="${t.id}"><button class="circle-check">${t.done?"✓":""}</button><div class="row-main"><b>${t.title}</b><small>${typeLabel[t.type]} · ${t.priority} · ${t.time||fmt(t.due,{day:"numeric",month:"short"})}</small></div><span class="category ${t.type}">${typeLabel[t.type]}</span></div>`}
@@ -127,9 +214,9 @@ function renderStats(){
  $("#statsProductivity").textContent=progress()+"%";$("#statsSpend").textContent=Math.round(spent)+" €";$("#statsRemaining").textContent=Math.round(remaining())+" €";
  $("#statsChartTitle").textContent=d.title;$("#statsChart").innerHTML=d.values.map(v=>`<i style="height:${v}%"></i>`).join("");$("#statsLabels").innerHTML=d.labels.map(x=>`<span>${x}</span>`).join("");
 }
-function bindRows(){$$("[data-task] .circle-check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest("[data-task]").dataset.task));t.done=!t.done;save();render();toast(t.done?"Tâche terminée ✨":"Tâche réactivée")});$$("[data-habit] .circle-check").forEach(b=>b.onclick=()=>{const h=state.habits.find(x=>x.id===Number(b.closest("[data-habit]").dataset.habit));h.done=!h.done;save();render();toast(h.done?"Habitude réalisée 🌿":"Habitude réactivée")});$$("[data-project] .circle-check").forEach(b=>b.onclick=()=>{const t=state.projectTasks.find(x=>x.id===Number(b.closest("[data-project]").dataset.project));t.done=!t.done;save();render()})}
+function bindRows(){$$("[data-task] .circle-check").forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===Number(b.closest("[data-task]").dataset.task));t.done=!t.done;save();render();toast(t.done?"Tâche terminée ✨":"Tâche réactivée")});$$("[data-habit] .circle-check").forEach(b=>b.onclick=()=>{const h=state.habits.find(x=>x.id===Number(b.closest("[data-habit]").dataset.habit));h.done=!h.done;recordHabit(h.id,h.done);save();render();toast(h.done?"Habitude réalisée 🌿":"Habitude réactivée")});$$("[data-project] .circle-check").forEach(b=>b.onclick=()=>{const t=state.projectTasks.find(x=>x.id===Number(b.closest("[data-project]").dataset.project));t.done=!t.done;save();render()})}
 function go(screen){$$(".screen").forEach(s=>s.classList.toggle("active",s.dataset.screen===screen));$$(".bottom-nav [data-go]").forEach(b=>b.classList.toggle("active",b.dataset.go===screen));$("#sideMenu").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"})}
-$$("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));$("#openMenu").onclick=()=>$("#sideMenu").classList.add("open");$("#openNotifications").onclick=()=>$("#notificationDrawer").classList.add("open");$$("[data-close]").forEach(b=>b.onclick=()=>$("#"+b.dataset.close).classList.remove("open"));$("#dayModeButton").onclick=()=>$("#daySheet").classList.add("open");$$("[data-day]").forEach(b=>b.onclick=()=>{state.dayMode=b.dataset.day;save();$("#daySheet").classList.remove("open");render()});$("#markRead").onclick=()=>{state.notifications.forEach(n=>n.read=true);save();renderNotifications()};$("#smartAction").onclick=()=>go($("#smartAction").dataset.smartGo||"tasks");
+$$("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));$("#openMenu").onclick=()=>$("#sideMenu").classList.add("open");$("#openNotifications").onclick=()=>$("#notificationDrawer").classList.add("open");$$("[data-close]").forEach(b=>b.onclick=()=>$("#"+b.dataset.close).classList.remove("open"));$("#dayModeButton").onclick=()=>$("#daySheet").classList.add("open");$$("[data-day]").forEach(b=>b.onclick=()=>{setModeForDate(isoToday(),b.dataset.day);$("#daySheet").classList.remove("open");render()});$("#markRead").onclick=()=>{state.notifications.forEach(n=>n.read=true);save();renderNotifications()};$("#smartAction").onclick=()=>go($("#smartAction").dataset.smartGo||"tasks");
 $$("[data-agenda]").forEach(b=>b.onclick=()=>{agendaMode=b.dataset.agenda;$$("[data-agenda]").forEach(x=>x.classList.toggle("active",x===b));renderAgenda()});$("#prevDate").onclick=()=>{state.selectedDate=addDays(state.selectedDate,-1);save();renderAgenda()};$("#nextDate").onclick=()=>{state.selectedDate=addDays(state.selectedDate,1);save();renderAgenda()};
 $$("[data-task-tab]").forEach(b=>b.onclick=()=>{taskTab=b.dataset.taskTab;$$("[data-task-tab]").forEach(x=>x.classList.toggle("active",x===b));renderTasks()});$$("[data-routine-tab]").forEach(b=>b.onclick=()=>{routineTab=b.dataset.routineTab;$$("[data-routine-tab]").forEach(x=>x.classList.toggle("active",x===b));renderRoutines()});
 $$('[data-stats]').forEach(b=>b.onclick=()=>{statsPeriod=b.dataset.stats;$$('[data-stats]').forEach(x=>x.classList.toggle('active',x===b));renderStats()});
@@ -137,4 +224,5 @@ const dialog=$("#formDialog"),fields=$("#formFields");
 function openForm(kind){$("#formTitle").textContent=kind==="event"?"Ajouter un rendez-vous":kind==="task"?"Ajouter une tâche":kind==="habit"?"Ajouter une habitude":kind==="expense"?"Ajouter une dépense":"Ajouter une étape";if(kind==="event")fields.innerHTML=`<input type="hidden" name="kind" value="event"><label>Titre<input name="title" required></label><label>Date<input type="date" name="date" value="${state.selectedDate}"></label><label>Heure<input type="time" name="time" value="10:00"></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Travail</option><option value="business">Betty & Co</option></select></label><label>Détail<input name="detail"></label>`;if(kind==="task")fields.innerHTML=`<input type="hidden" name="kind" value="task"><label>Tâche<input name="title" required></label><label>Catégorie<select name="type"><option value="personal">Personnel</option><option value="work">Travail</option><option value="business">Betty & Co</option></select></label><label>Date<input type="date" name="due" value="${state.selectedDate}"></label><label>Heure facultative<input type="time" name="time"></label><label>Priorité<select name="priority"><option value="low">Basse</option><option value="normal">Moyenne</option><option value="important">Importante</option></select></label><label>Report<select name="report"><option value="tomorrow">Au lendemain</option><option value="next-workday">Au prochain jour travaillé</option><option value="next-free-day">Au prochain jour libre</option><option value="until-done">Chaque jour jusqu’à fait</option><option value="none">Sans report automatique</option></select></label>`;if(kind==="expense")fields.innerHTML=`<input type="hidden" name="kind" value="expense"><label>Libellé<input name="title" required></label><label>Montant<input type="number" step="0.01" name="amount" required></label><label>Catégorie<input name="cat" value="Divers"></label>`;if(kind==="habit")fields.innerHTML=`<input type="hidden" name="kind" value="habit"><label>Habitude<input name="title" required></label><label>Moment<select name="group"><option>Matin</option><option>Soir</option></select></label>`;if(kind==="projectTask")fields.innerHTML=`<input type="hidden" name="kind" value="projectTask"><label>Nouvelle étape<input name="title" required></label>`;dialog.showModal()}
 $$("[data-add]").forEach(b=>b.onclick=()=>openForm(b.dataset.add));$("#closeDialog").onclick=()=>dialog.close();$("#dynamicForm").onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),k=f.get("kind");if(k==="event")state.events.push({id:Date.now(),date:f.get("date"),time:f.get("time"),title:f.get("title"),type:f.get("type"),detail:f.get("detail")});if(k==="task")state.tasks.push({id:Date.now(),title:f.get("title"),type:f.get("type"),priority:f.get("priority"),due:f.get("due"),time:f.get("time"),report:f.get("report"),done:false});if(k==="expense")state.expenses.unshift({id:Date.now(),date:isoToday(),title:f.get("title"),amount:Number(f.get("amount")),cat:f.get("cat")});if(k==="habit")state.habits.push({id:Date.now(),title:f.get("title"),group:f.get("group"),modes:["work","rest","vacation","sick"],done:false});if(k==="projectTask")state.projectTasks.push({id:Date.now(),title:f.get("title"),done:false});save();dialog.close();render()};
 $$(".moods button").forEach(b=>b.onclick=()=>{$$(".moods button").forEach(x=>x.classList.remove("active"));b.classList.add("active")});$("#energy").oninput=e=>$("#energyValue").textContent=e.target.value+"/5";$("#stress").oninput=e=>$("#stressValue").textContent=e.target.value+"/5";$("#saveJournal").onclick=()=>{state.journal.push({id:Date.now(),date:isoToday(),mood:$(".moods .active").textContent,energy:$("#energy").value,stress:$("#stress").value,proud:$("#proud").value,gratitude:$("#gratitude").value,text:$("#journalText").value});save();toast("Bilan enregistré 🌙")};
+$("#resetRhythm")?.addEventListener("click",()=>{state.daySchedule={};save();render();toast("Planning personnalisé réinitialisé")});
 setTimeout(()=>$("#splash").classList.add("hide"),1000);render();if("serviceWorker"in navigator)navigator.serviceWorker.register("service-worker.js").catch(()=>{});

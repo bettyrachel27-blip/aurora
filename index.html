@@ -12,8 +12,8 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=140">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=150-rhythm">
 </head>
 <body>
   <div class="splash" id="splash">
@@ -53,6 +53,7 @@
               <p class="soft-quote">Chaque jour est une nouvelle occasion de créer la vie que tu aimes.</p>
 
               <button class="day-mode" id="dayModeButton">Travail <span>▾</span></button>
+              <button class="context-ribbon" id="openRhythm" data-go="rhythm"><span id="timeContextIcon">☀️</span><span><b id="timeContextLabel">Matin</b><small id="timeContextText">Aurora adapte ta journée</small></span><i>›</i></button>
 
               <div class="home-shortcuts">
                 <button data-go="agenda"><span>▦</span><b>Agenda</b><small id="shortcutEvents">0 événement</small></button>
@@ -178,6 +179,36 @@
         <div id="routineContent" class="rows roomy"></div>
       </section>
 
+      <section class="screen" data-screen="rhythm">
+        <div class="page-heading">
+          <button class="back-button" data-go="home">←</button>
+          <div><span>Aurora Rythme</span><h2>Mon rythme de vie</h2></div>
+          <span></span>
+        </div>
+
+        <article class="rhythm-hero">
+          <span>Planning intelligent</span>
+          <h3>Dis à Aurora quel type de journée tu vis</h3>
+          <p>Les tâches, routines et suggestions s’adapteront automatiquement, sans supprimer tes rendez-vous ni tes tâches.</p>
+        </article>
+
+        <section class="paper-card rhythm-section">
+          <div class="section-title"><h3>Ma semaine habituelle</h3><small>Modifiable à tout moment</small></div>
+          <div class="weekly-rhythm" id="weeklyRhythm"></div>
+        </section>
+
+        <section class="paper-card rhythm-section">
+          <div class="section-title"><h3>Mes prochains jours</h3><button id="resetRhythm" class="text-button">Réinitialiser</button></div>
+          <div class="rhythm-calendar" id="rhythmCalendar"></div>
+        </section>
+
+        <section class="paper-card rhythm-section">
+          <div class="section-title"><h3>Ce qu’Aurora apprend</h3><span class="ai-pill">IA locale</span></div>
+          <div id="habitInsights" class="habit-insights"></div>
+          <p class="privacy-note">Les habitudes sont analysées uniquement dans ton navigateur. Rien n’est envoyé ailleurs.</p>
+        </section>
+      </section>
+
       <section class="screen" data-screen="budget">
         <div class="page-heading">
           <button class="back-button" data-go="home">←</button>
@@ -282,6 +313,7 @@
     <button data-go="agenda">Agenda</button>
     <button data-go="tasks">Tâches</button>
     <button data-go="routines">Routines</button>
+    <button data-go="rhythm">Mon rythme</button>
     <button data-go="budget">Budget</button>
     <button data-go="journal">Journal du soir</button>
     <button data-go="projects">Betty & Co</button>
@@ -300,8 +332,10 @@
       <div class="choice-grid">
         <button data-day="work">💼<span>Travail</span></button>
         <button data-day="rest">🏡<span>Repos</span></button>
+        <button data-day="recovery">🌙<span>Récupération</span></button>
         <button data-day="vacation">✈️<span>Vacances</span></button>
         <button data-day="sick">🌿<span>Repos santé</span></button>
+        <button data-go="rhythm" data-close="daySheet">📅<span>Planifier</span></button>
       </div>
     </div>
   </div>
@@ -315,7 +349,7 @@
   </dialog>
 
   <div class="toast" id="toast"></div>
-  <div class="version">Aurora 1.4 · Renaissance</div>
-  <script src="app.js?v=140"></script>
+  <div class="version">Aurora 1.5 · Rythme intelligent</div>
+  <script src="app.js?v=150-rhythm"></script>
 </body>
 </html>
