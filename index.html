@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-3.0.css?v=300">
+  <link rel="stylesheet" href="style-3.0.css?v=301">
 </head>
 <body>
   <section class="welcome-screen" id="welcomeScreen" aria-label="Bienvenue dans Aurora">
@@ -303,7 +303,7 @@
       <section class="screen" data-screen="cloud">
         <div class="page-heading">
           <button class="back-button" data-go="home">←</button>
-          <div><span>Aurora 3.0</span><h2>Aurora Cloud</h2></div>
+          <div><span>Aurora 3.0.1</span><h2>Agenda intelligent</h2></div>
           <span></span>
         </div>
 
@@ -415,6 +415,22 @@
   </dialog>
 
 
+  <dialog id="eventActionDialog" class="task-action-dialog event-action-dialog">
+    <form method="dialog" id="eventActionForm">
+      <div class="menu-head"><div><small id="eventActionCategory">Rendez-vous</small><h3 id="eventActionTitle">Gérer le rendez-vous</h3></div><button type="button" id="closeEventAction">✕</button></div>
+      <p id="eventActionHint" class="task-action-hint"></p>
+      <div class="task-action-grid">
+        <button type="button" data-event-action="edit" class="event-edit">✎<span>Modifier</span></button>
+        <button type="button" data-event-action="tomorrow">↪<span>Reporter à demain</span></button>
+        <button type="button" data-event-action="next-workday">💼<span>Prochain jour travaillé</span></button>
+        <button type="button" data-event-action="next-free-day">🏡<span>Prochain jour libre</span></button>
+        <button type="button" data-event-action="choose-date">📅<span>Choisir une date</span></button>
+        <button type="button" data-event-action="delete" class="task-delete">🗑<span>Supprimer</span></button>
+      </div>
+      <label class="task-date-picker" id="eventDatePicker">Nouvelle date<input type="date" id="eventReportDate"></label>
+    </form>
+  </dialog>
+
   <dialog id="taskActionDialog" class="task-action-dialog">
     <form method="dialog" id="taskActionForm">
       <div class="menu-head"><div><small id="taskActionCategory">Tâche</small><h3 id="taskActionTitle">Gérer la tâche</h3></div><button type="button" id="closeTaskAction">✕</button></div>
@@ -431,7 +447,37 @@
     </form>
   </dialog>
 
+
+  <dialog id="habitActionDialog" class="task-action-dialog">
+    <form method="dialog">
+      <div class="menu-head"><div><small id="habitActionCategory">Routine</small><h3 id="habitActionTitle">Gérer l’habitude</h3></div><button type="button" id="closeHabitAction">✕</button></div>
+      <p class="task-action-hint">Choisis ce que tu souhaites faire avec cette habitude.</p>
+      <div class="task-action-grid">
+        <button type="button" data-habit-action="complete" class="task-complete">✓<span>Valider</span></button>
+        <button type="button" data-habit-action="tomorrow">↪<span>Reporter à demain</span></button>
+        <button type="button" data-habit-action="next-workday">💼<span>Prochain jour travaillé</span></button>
+        <button type="button" data-habit-action="next-free-day">🏡<span>Prochain jour libre</span></button>
+        <button type="button" data-habit-action="choose-date">📅<span>Choisir une date</span></button>
+        <button type="button" data-habit-action="delete" class="task-delete">🗑<span>Supprimer</span></button>
+      </div>
+      <label class="task-date-picker" id="habitDatePicker">Nouvelle date<input type="date" id="habitReportDate"></label>
+    </form>
+  </dialog>
+
+  <dialog id="routineProfileDialog" class="task-action-dialog routine-profile-dialog">
+    <form method="dialog">
+      <div class="menu-head"><div><small>Mes routines</small><h3 id="routineProfileTitle">Modifier la routine</h3></div><button type="button" id="closeRoutineProfile">✕</button></div>
+      <p class="task-action-hint">Coche les habitudes qui doivent apparaître dans cette routine. Tu peux également en créer une nouvelle.</p>
+      <div id="routineProfileHabits" class="profile-habit-list"></div>
+      <div class="profile-add-habit">
+        <label>Nouvelle habitude<input type="text" id="newProfileHabit" placeholder="Ex. Préparer mon sac"></label>
+        <label>Moment<select id="newProfileGroup"><option>Matin</option><option>Midi</option><option>Après-midi</option><option>Soir</option></select></label>
+      </div>
+      <button type="button" id="saveRoutineProfile" class="brown-button wide">Enregistrer la routine</button>
+    </form>
+  </dialog>
+
   <div class="toast" id="toast"></div>
-  <script src="app-3.0.js?v=300"></script>
+  <script src="app-3.0.js?v=302"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 {
-  "name": "Aurora 3.0 — Aurora Cloud",
+  "name": "Aurora 3.0.2 — Agenda intelligent",
   "short_name": "Aurora",
-  "start_url": "./?v=300",
+  "start_url": "./?v=301",
   "display": "standalone",
   "background_color": "#f8eee2",
   "theme_color": "#4b2f21",
