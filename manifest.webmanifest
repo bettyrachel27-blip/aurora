@@ -1,7 +1,7 @@
 {
-  "name": "Aurora 2.0 Phase 2.1 — Intelligence quotidienne",
+  "name": "Aurora 3.0 — Aurora Cloud",
   "short_name": "Aurora",
-  "start_url": "./?v=201",
+  "start_url": "./?v=300",
   "display": "standalone",
   "background_color": "#f8eee2",
   "theme_color": "#4b2f21",

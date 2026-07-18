@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-2.0-phase2.css?v=201">
+  <link rel="stylesheet" href="style-3.0.css?v=300">
 </head>
 <body>
   <section class="welcome-screen" id="welcomeScreen" aria-label="Bienvenue dans Aurora">
@@ -25,7 +25,7 @@
       <h1>Aurora</h1>
       <p class="welcome-subtitle">Ton assistante personnelle, pensée pour suivre ton rythme et prendre soin de ton quotidien.</p>
       <button type="button" id="enterAurora" class="welcome-enter">Entrer dans mon univers <span>→</span></button>
-      <small>Tes rendez-vous, tâches et habitudes restent enregistrés sur cet appareil.</small>
+      <small>Tes données restent disponibles sur cet appareil et peuvent être synchronisées avec Aurora Cloud.</small>
     </div>
   </section>
 
@@ -43,7 +43,7 @@
         <span class="brand-mark">✦</span>
         <div><strong>Aurora</strong><small>Mon Univers</small></div>
       </div>
-      <button class="notify-button" id="openNotifications" aria-label="Notifications">♧<b id="notifBadge">3</b></button>
+      <button class="cloud-header-status" id="cloudHeaderStatus" data-go="cloud" aria-label="État de la synchronisation"><i></i><span>Local</span></button>
     </header>
 
     <main>
@@ -299,6 +299,50 @@
         </article>
       </section>
 
+
+      <section class="screen" data-screen="cloud">
+        <div class="page-heading">
+          <button class="back-button" data-go="home">←</button>
+          <div><span>Aurora 3.0</span><h2>Aurora Cloud</h2></div>
+          <span></span>
+        </div>
+
+        <article class="cloud-hero">
+          <span>☁ Synchronisation multiappareil</span>
+          <h3>Les mêmes données sur ton téléphone et ton ordinateur</h3>
+          <p>Aurora conserve une copie locale et échange les changements avec ton Google Apps Script lorsque la connexion est disponible.</p>
+          <div class="cloud-status-line"><i id="cloudStatusDot"></i><b id="cloudStatusText">Non configuré</b><small id="cloudLastSync">Aucune synchronisation</small></div>
+        </article>
+
+        <section class="paper-card cloud-settings">
+          <div class="section-title"><h3>Connexion Google Apps Script</h3><small>Utilise l’adresse stable qui se termine par /exec</small></div>
+          <label>Adresse de l’application Web<input id="cloudEndpoint" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off"></label>
+          <label>Code secret<input id="cloudToken" type="password" placeholder="Ton SECRET_TOKEN" autocomplete="new-password"></label>
+          <label class="cloud-toggle"><input id="cloudEnabled" type="checkbox"><span>Activer la synchronisation automatique</span></label>
+          <div class="cloud-actions">
+            <button class="brown-button" id="saveCloudSettings">Enregistrer la connexion</button>
+            <button class="soft-button" id="testCloudConnection">Tester</button>
+          </div>
+        </section>
+
+        <section class="paper-card cloud-first-sync">
+          <div class="section-title"><h3>Première synchronisation</h3><small>Choisis la copie à conserver</small></div>
+          <p><b>Envoyer cet appareil</b> place les données présentes ici dans Google Sheets. <b>Récupérer le cloud</b> remplace cette copie locale par celle déjà enregistrée en ligne.</p>
+          <div class="cloud-actions stacked-mobile">
+            <button class="brown-button" id="pushCloudNow">Envoyer cet appareil</button>
+            <button class="soft-button" id="pullCloudNow">Récupérer le cloud</button>
+            <button class="soft-button" id="syncCloudNow">Synchroniser maintenant</button>
+          </div>
+          <p class="cloud-note" id="cloudMessage">Aucune donnée ne sera envoyée tant que la synchronisation n’est pas activée.</p>
+        </section>
+
+        <section class="paper-card cloud-details">
+          <div class="cloud-detail"><span>Appareil</span><b id="cloudDeviceName">—</b></div>
+          <div class="cloud-detail"><span>État local</span><b id="cloudDirtyState">À jour</b></div>
+          <div class="cloud-detail"><span>Dernière vérification</span><b id="cloudLastCheck">Jamais</b></div>
+        </section>
+      </section>
+
       <section class="screen" data-screen="projects">
         <div class="page-heading">
           <button class="back-button" data-go="home">←</button>
@@ -338,6 +382,7 @@
     <button data-go="journal">Journal du soir</button>
     <button data-go="projects">Betty & Co</button>
     <button data-go="stats">Statistiques</button>
+    <button data-go="cloud">☁ Aurora Cloud</button>
     <div class="dynamic-sidebar-quote" id="sidebarQuote">“Chaque jour est une nouvelle occasion de créer la vie que tu aimes.”<span>♡</span></div>
   </aside>
 
@@ -387,6 +432,6 @@
   </dialog>
 
   <div class="toast" id="toast"></div>
-  <script src="app-2.0-phase2.js?v=201"></script>
+  <script src="app-3.0.js?v=300"></script>
 </body>
 </html>
