@@ -1,12 +1,5 @@
-Aurora 1.8.1 — Correctifs visuels
+# Aurora 2.0 — Phase 2 : Assistant intelligent
 
-# Aurora 1.8 — Pages adaptatives intelligentes
+Cette version conserve les données existantes via la clé locale `aurora-alpha-13`.
 
-Cette version conserve les données enregistrées avec la clé `aurora-alpha-13`.
-
-Nouveautés :
-- chaque onglet ouvre une page dédiée ;
-- chaque page s’adapte au mode Travail, Repos, Récupération, Vacances ou Repos santé ;
-- les tâches sont automatiquement orientées vers Pro ou Perso selon le jour ;
-- les rendez-vous pertinents sont remontés en premier ;
-- les routines, messages et conseils changent avec le rythme du jour.
+Nouveautés : apprentissage local des moments de productivité, suggestions personnalisées, historique des validations et reports, report automatique des tâches échues selon le planning, et nouveaux enseignements dans Statistiques.

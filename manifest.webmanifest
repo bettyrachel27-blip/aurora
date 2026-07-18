@@ -1,20 +1,12 @@
 {
-  "name": "Aurora 1.8 — Mon Univers",
+  "name": "Aurora 2.0 Phase 2.1 — Intelligence quotidienne",
   "short_name": "Aurora",
-  "start_url": "./?v=16",
+  "start_url": "./?v=201",
   "display": "standalone",
   "background_color": "#f8eee2",
   "theme_color": "#4b2f21",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png"}
   ]
 }

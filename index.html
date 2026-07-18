@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-1.8.css?v=180">
+  <link rel="stylesheet" href="style-2.0-phase2.css?v=201">
 </head>
 <body>
   <section class="welcome-screen" id="welcomeScreen" aria-label="Bienvenue dans Aurora">
@@ -57,7 +57,7 @@
               <div class="date-eyebrow" id="homeDate"></div>
               <h1 id="helloTitle">Bonjour Betty</h1>
               <p id="homeTime"></p>
-              <p class="soft-quote">Chaque jour est une nouvelle occasion de créer la vie que tu aimes.</p>
+              <p class="soft-quote" id="dailyQuote">Chaque jour est une nouvelle occasion de créer la vie que tu aimes.</p>
 
               <button class="day-mode" id="dayModeButton">Travail <span>▾</span></button>
               <button class="context-ribbon" id="openRhythm" data-go="rhythm"><span id="timeContextIcon">☀️</span><span><b id="timeContextLabel">Matin</b><small id="timeContextText">Aurora adapte ta journée</small></span><i>›</i></button>
@@ -291,6 +291,12 @@
           <article><span>Dépenses</span><b id="statsSpend">0 €</b><small>Mois en cours</small></article>
           <article><span>Budget restant</span><b id="statsRemaining">0 €</b><small>Disponible</small></article>
         </div>
+
+        <article class="assistant-insights-card">
+          <div class="section-title"><span>Aurora Assistant</span><h3>Ce qu’Aurora apprend de ton rythme</h3></div>
+          <div class="assistant-insights" id="assistantInsights"></div>
+          <p class="assistant-privacy">Analyse locale et privée : aucune donnée n’est envoyée en ligne.</p>
+        </article>
       </section>
 
       <section class="screen" data-screen="projects">
@@ -332,6 +338,7 @@
     <button data-go="journal">Journal du soir</button>
     <button data-go="projects">Betty & Co</button>
     <button data-go="stats">Statistiques</button>
+    <div class="dynamic-sidebar-quote" id="sidebarQuote">“Chaque jour est une nouvelle occasion de créer la vie que tu aimes.”<span>♡</span></div>
   </aside>
 
   <aside class="notification-drawer" id="notificationDrawer">
@@ -380,6 +387,6 @@
   </dialog>
 
   <div class="toast" id="toast"></div>
-  <script src="app-1.8.js?v=180"></script>
+  <script src="app-2.0-phase2.js?v=201"></script>
 </body>
 </html>
