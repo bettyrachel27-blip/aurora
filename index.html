@@ -13,14 +13,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=150-rhythm">
+  <link rel="stylesheet" href="style-1.6.css?v=160">
 </head>
 <body>
-  <div class="splash" id="splash">
-    <div class="splash-lotus">✦</div>
-    <h1>Aurora</h1>
-    <p>Ton assistante personnelle intelligente</p>
-  </div>
+  <section class="welcome-screen" id="welcomeScreen" aria-label="Bienvenue dans Aurora">
+    <div class="welcome-flower welcome-flower-left" aria-hidden="true"></div>
+    <div class="welcome-flower welcome-flower-right" aria-hidden="true"></div>
+    <div class="welcome-card">
+      <div class="welcome-lotus" aria-hidden="true"></div>
+      <p class="welcome-kicker">MON UNIVERS</p>
+      <h1>Aurora</h1>
+      <p class="welcome-subtitle">Ton assistante personnelle, pensée pour suivre ton rythme et prendre soin de ton quotidien.</p>
+      <button type="button" id="enterAurora" class="welcome-enter">Entrer dans mon univers <span>→</span></button>
+      <small>Tes rendez-vous, tâches et habitudes restent enregistrés sur cet appareil.</small>
+    </div>
+  </section>
 
   <div class="ornament ornament-a"></div>
   <div class="ornament ornament-b"></div>
@@ -349,7 +356,7 @@
   </dialog>
 
   <div class="toast" id="toast"></div>
-  <div class="version">Aurora 1.5 · Rythme intelligent</div>
-  <script src="app.js?v=150-rhythm"></script>
+  <div class="version">Aurora 1.6 · Rythme intelligent</div>
+  <script src="app-1.6.js?v=160"></script>
 </body>
 </html>
