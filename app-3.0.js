@@ -67,9 +67,59 @@ function load(){
     return merged;
   }catch{return structuredClone(base)}
 }
+const SYNC_ARRAYS=["events","tasks","habits","expenses","projectTasks","notifications","journal"];
+const SYNC_APPEND_ARRAYS=["habitHistory","taskHistory","assistantLog"];
+let lastSavedSnapshot=structuredClone(state);
+function syncClone(value){return value==null?value:structuredClone(value)}
+function syncComparable(value){
+  if(Array.isArray(value))return value.map(syncComparable);
+  if(value&&typeof value==="object"){
+    const out={};Object.keys(value).sort().forEach(k=>{if(k!=="_updatedAt"&&k!=="_sync")out[k]=syncComparable(value[k])});return out;
+  }
+  return value;
+}
+function syncEqual(a,b){try{return JSON.stringify(syncComparable(a))===JSON.stringify(syncComparable(b))}catch{return false}}
+function ensureSyncMeta(target,stamp){
+  target._sync=target._sync&&typeof target._sync==="object"?target._sync:{};
+  target._sync.sections=target._sync.sections&&typeof target._sync.sections==="object"?target._sync.sections:{};
+  target._sync.tombstones=target._sync.tombstones&&typeof target._sync.tombstones==="object"?target._sync.tombstones:{};
+  SYNC_ARRAYS.forEach(name=>{
+    target._sync.tombstones[name]=target._sync.tombstones[name]&&typeof target._sync.tombstones[name]==="object"?target._sync.tombstones[name]:{};
+    (Array.isArray(target[name])?target[name]:[]).forEach(item=>{if(item&&item.id!=null&&!item._updatedAt)item._updatedAt=stamp||target._updatedAt||new Date().toISOString()});
+  });
+  return target;
+}
+function prepareSyncMetadata(now){
+  ensureSyncMeta(state,state._updatedAt||now);
+  const previous=lastSavedSnapshot||{};
+  SYNC_ARRAYS.forEach(name=>{
+    const current=Array.isArray(state[name])?state[name]:[];
+    const before=Array.isArray(previous[name])?previous[name]:[];
+    const beforeMap=new Map(before.filter(x=>x&&x.id!=null).map(x=>[String(x.id),x]));
+    const currentIds=new Set();
+    current.forEach(item=>{
+      if(!item||item.id==null)return;
+      const id=String(item.id);currentIds.add(id);const oldItem=beforeMap.get(id);
+      if(!oldItem||!syncEqual(item,oldItem))item._updatedAt=now;
+      else if(!item._updatedAt)item._updatedAt=oldItem._updatedAt||previous._updatedAt||now;
+      const deletedAt=state._sync.tombstones[name][id];
+      if(deletedAt&&new Date(item._updatedAt||0)>=new Date(deletedAt))delete state._sync.tombstones[name][id];
+    });
+    beforeMap.forEach((item,id)=>{if(!currentIds.has(id))state._sync.tombstones[name][id]=now});
+  });
+  const ignored=new Set(["_updatedAt","_sync",...SYNC_ARRAYS]);
+  Object.keys({...previous,...state}).forEach(key=>{
+    if(ignored.has(key))return;
+    if(!syncEqual(state[key],previous[key]))state._sync.sections[key]=now;
+    else if(!state._sync.sections[key])state._sync.sections[key]=previous?._sync?.sections?.[key]||previous._updatedAt||now;
+  });
+}
 function save(options={}){
-  state._updatedAt=new Date().toISOString();
+  const now=new Date().toISOString();
+  prepareSyncMetadata(now);
+  state._updatedAt=now;
   localStorage.setItem(KEY,JSON.stringify(state));
+  lastSavedSnapshot=structuredClone(state);
   if(!options.skipCloud&&typeof AuroraCloud!=="undefined")AuroraCloud.markDirty();
 }
 function addDays(iso,n){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
@@ -579,6 +629,61 @@ document.addEventListener("click",event=>{
 });
 
 
+// Aurora 3.0.2 — fusion sécurisée multiappareil
+function syncTime(value,fallback=0){const t=new Date(value||fallback||0).getTime();return Number.isFinite(t)?t:0}
+function mergeAppendOnly(localList,remoteList){
+  const seen=new Set(),out=[];
+  [...(Array.isArray(localList)?localList:[]),...(Array.isArray(remoteList)?remoteList:[])].forEach(item=>{
+    const key=item&&item.id!=null?"id:"+item.id:JSON.stringify(syncComparable(item));
+    if(!seen.has(key)){seen.add(key);out.push(syncClone(item))}
+  });
+  return out;
+}
+function mergeAuroraStates(localState,remoteState){
+  const local=ensureSyncMeta(syncClone(localState||{}),localState?._updatedAt||new Date().toISOString());
+  const remote=ensureSyncMeta(syncClone(remoteState||{}),remoteState?._updatedAt||new Date().toISOString());
+  const merged={...structuredClone(base)};
+  merged._sync={sections:{},tombstones:{}};
+  const keys=new Set([...Object.keys(base),...Object.keys(local),...Object.keys(remote)]);
+  SYNC_ARRAYS.forEach(name=>{
+    const tomb={...(local._sync?.tombstones?.[name]||{})};
+    Object.entries(remote._sync?.tombstones?.[name]||{}).forEach(([id,stamp])=>{if(syncTime(stamp)>syncTime(tomb[id]))tomb[id]=stamp});
+    const candidates=new Map();
+    const collect=(list,owner)=>{(Array.isArray(list)?list:[]).forEach(item=>{
+      if(!item||item.id==null)return;const id=String(item.id);const current=candidates.get(id);
+      const stamp=syncTime(item._updatedAt,owner._updatedAt);
+      if(!current||stamp>current.stamp)candidates.set(id,{item:syncClone(item),stamp});
+    })};
+    collect(local[name],local);collect(remote[name],remote);
+    merged[name]=[];
+    candidates.forEach(({item,stamp},id)=>{if(syncTime(tomb[id])<stamp)merged[name].push(item)});
+    if(name==="events")merged[name].sort((a,b)=>(a.date||"").localeCompare(b.date||"")||(a.time||"99:99").localeCompare(b.time||"99:99")||(a.title||"").localeCompare(b.title||"","fr"));
+    merged._sync.tombstones[name]=tomb;
+    keys.delete(name);
+  });
+  SYNC_APPEND_ARRAYS.forEach(name=>{
+    merged[name]=mergeAppendOnly(local[name],remote[name]);
+    const l=syncTime(local._sync?.sections?.[name],local._updatedAt),r=syncTime(remote._sync?.sections?.[name],remote._updatedAt);
+    merged._sync.sections[name]=(l>=r?local._sync?.sections?.[name]:remote._sync?.sections?.[name])||(l>=r?local._updatedAt:remote._updatedAt)||new Date().toISOString();
+    keys.delete(name);
+  });
+  keys.delete("_sync");keys.delete("_updatedAt");
+  keys.forEach(key=>{
+    const lStamp=syncTime(local._sync?.sections?.[key],local._updatedAt);
+    const rStamp=syncTime(remote._sync?.sections?.[key],remote._updatedAt);
+    merged[key]=syncClone(rStamp>lStamp?remote[key]:local[key]);
+    merged._sync.sections[key]=(rStamp>lStamp?remote._sync?.sections?.[key]:local._sync?.sections?.[key])||(rStamp>lStamp?remote._updatedAt:local._updatedAt)||new Date().toISOString();
+  });
+  merged._updatedAt=new Date(Math.max(syncTime(local._updatedAt),syncTime(remote._updatedAt),Date.now())).toISOString();
+  return merged;
+}
+function storeMergedState(next){
+  state={...structuredClone(base),...next};
+  ensureSyncMeta(state,state._updatedAt||new Date().toISOString());
+  localStorage.setItem(KEY,JSON.stringify(state));
+  lastSavedSnapshot=structuredClone(state);
+}
+
 // Aurora 3.0 — synchronisation Google Apps Script / Google Sheets
 const AuroraCloud=(()=>{
   const CONFIG_KEY="aurora-cloud-config-v1";
@@ -635,32 +740,39 @@ const AuroraCloud=(()=>{
   }
   async function push({silent=false}={}){
     if(busy)return;const cfg=ensureDevice(readConfig());if(!cfg.enabled&&!silent)return;
-    busy=true;status("syncing","Synchronisation…");
+    busy=true;status("syncing","Fusion et synchronisation…");
     try{
+      prepareSyncMetadata(new Date().toISOString());
       state._updatedAt=new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(state));
-      const result=await request("save",{action:"save",token:cfg.token,device:cfg.deviceName+" · "+cfg.deviceId.slice(0,8),data:state});
-      setDirty(false);setLastSync(result.savedAt||new Date().toISOString());status("online","Synchronisé","Les données de cet appareil sont maintenant dans Aurora Cloud.");
+      let remote=null;
+      try{const loaded=await request("load");remote=loaded.data||null}catch(loadErr){if(!navigator.onLine)throw loadErr}
+      const merged=remote?mergeAuroraStates(state,remote):syncClone(state);
+      merged._updatedAt=new Date().toISOString();
+      const result=await request("save",{action:"save",token:cfg.token,device:cfg.deviceName+" · "+cfg.deviceId.slice(0,8),data:merged});
+      storeMergedState(merged);setDirty(false);setLastSync(result.savedAt||new Date().toISOString());render();
+      status("online","Synchronisé","Les données du téléphone, de l’ordinateur et du cloud ont été fusionnées sans écrasement.");
     }catch(err){setDirty(true);status(navigator.onLine?"error":"offline",navigator.onLine?"Erreur":"Hors connexion",err.message);if(!silent)toast(err.message)}finally{busy=false;renderStatus()}
   }
   async function pull({force=false,silent=false}={}){
     if(busy)return;const cfg=ensureDevice(readConfig());if(!cfg.enabled&&!force&&!silent)return;
-    busy=true;status("syncing","Vérification…");
+    busy=true;status("syncing","Fusion des données…");
     try{
       const result=await request("load");
       if(!result.data){status("online","Cloud vide","Aucune sauvegarde n’existe encore. Utilise « Envoyer cet appareil ».");return}
-      const remoteTime=new Date(result.updatedAt||result.data._updatedAt||0).getTime();
-      const localTime=new Date(state._updatedAt||0).getTime();
-      if(force||remoteTime>localTime){
-        state={...structuredClone(base),...result.data};
-        localStorage.setItem(KEY,JSON.stringify(state));setDirty(false);setLastSync(result.updatedAt||new Date().toISOString());render();
-        status("online","Synchronisé","Les données du cloud ont été récupérées sur cet appareil.");
-      }else if(isDirty()&&localTime>=remoteTime){
-        busy=false;await push({silent:true});return;
-      }else{setLastSync(result.updatedAt||lastSync()||new Date().toISOString());status("online","À jour","Aucune donnée plus récente à récupérer.")}
+      const merged=mergeAuroraStates(state,result.data);
+      const differsFromRemote=!syncEqual(merged,result.data);
+      const differsFromLocal=!syncEqual(merged,state);
+      storeMergedState(merged);setLastSync(result.updatedAt||new Date().toISOString());
+      if(differsFromRemote){
+        const saved=await request("save",{action:"save",token:cfg.token,device:cfg.deviceName+" · "+cfg.deviceId.slice(0,8),data:merged});
+        setLastSync(saved.savedAt||new Date().toISOString());
+      }
+      setDirty(false);if(differsFromLocal)render();
+      status("online","Synchronisé",differsFromLocal?"Les nouveautés des deux appareils ont été fusionnées.":"Toutes les données sont déjà à jour.");
     }catch(err){status(navigator.onLine?"error":"offline",navigator.onLine?"Erreur":"Hors connexion",err.message);if(!silent)toast(err.message)}finally{busy=false;renderStatus()}
   }
   async function syncNow(){
-    if(isDirty())await push({silent:true});else await pull({silent:true});
+    await pull({silent:true});
   }
   function markDirty(){
     setDirty(true);const cfg=readConfig();if(!cfg.enabled||!isConfigured(cfg))return;
@@ -693,7 +805,7 @@ const AuroraCloud=(()=>{
       catch(err){status("error","Connexion impossible",err.message);toast(err.message)}
     });
     $("#pushCloudNow")?.addEventListener("click",()=>push());
-    $("#pullCloudNow")?.addEventListener("click",()=>{if(confirm("Remplacer les données de cet appareil par celles du cloud ?"))pull({force:true})});
+    $("#pullCloudNow")?.addEventListener("click",()=>{if(confirm("Fusionner les données de cet appareil avec celles du cloud ? Aucune donnée récente ne sera écrasée."))pull({force:true})});
     $("#syncCloudNow")?.addEventListener("click",syncNow);
     window.addEventListener("online",()=>{renderStatus();if(isDirty())push({silent:true});else pull({silent:true})});
     window.addEventListener("offline",renderStatus);
@@ -708,5 +820,5 @@ const AuroraCloud=(()=>{
 AuroraCloud.bind();
 render();
 if("serviceWorker"in navigator){
-  navigator.serviceWorker.register("service-worker.js?v=300").then(reg=>reg.update()).catch(()=>{});
+  navigator.serviceWorker.register("service-worker.js?v=302safe").then(reg=>reg.update()).catch(()=>{});
 }

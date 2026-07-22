@@ -1,5 +1,5 @@
-const CACHE='aurora-3.0.1-agenda-v1';
-const ASSETS=['./','./index.html','./style-3.0.css?v=302','./app-3.0.js?v=302','./manifest.webmanifest','./icon-192.png','./icon-512.png','./assets/aurora-woman-clean.webp','./assets/lily-elegant.svg','./assets/lotus-gold.svg'];
+const CACHE='aurora-3.0.2-sync-safe-v1';
+const ASSETS=['./','./index.html','./style-3.0.css?v=302safe','./app-3.0.js?v=302safe','./manifest.webmanifest','./icon-192.png','./icon-512.png','./assets/aurora-woman-clean.webp','./assets/lily-elegant.svg','./assets/lotus-gold.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
